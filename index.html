@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Місія «Data Mining: Архітектура прихованих закономірностей» — Інтерактивний квест</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f6ff 0%, #f8fafc 50%, #eefbf5 100%);
+      --card-bg: #ffffff;
+      --card-soft: #f8fafc;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --accent-amber: #d97706;
+      --amber-light: #fffbeb;
+      --amber-border: #fde68a;
+      --accent-purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fecaca;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --success-border: #bbf7d0;
+      --text-main: #1e293b;
+      --text-muted: #475569;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 24px rgba(37, 99, 235, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 12px 20px;
+    }
+    .topbar-inner {
+      max-width: 1040px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; color: var(--primary); }
+    .stats-pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .pill {
+      background: var(--primary-light); border: 1px solid var(--primary-border); color: var(--primary);
+      padding: 5px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pill.amber { background: var(--amber-light); border-color: var(--amber-border); color: var(--accent-amber); }
+    .pill.green { background: var(--success-light); border-color: var(--success-border); color: var(--success); }
+    .step-track {
+      max-width: 1040px; margin: 10px auto 0;
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+    }
+    .step-dot {
+      background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px;
+      padding: 5px 8px; font-size: 0.76rem; font-weight: 600; text-align: center;
+      color: var(--text-light); transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .step-dot.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .step-dot.done { background: var(--success-light); border-color: var(--success); color: var(--success); }
+    .container { max-width: 1040px; margin: 26px auto 0; padding: 0 18px; }
+    .hero-card {
+      background: var(--card-bg); border: 1px solid var(--primary-border);
+      border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-md); margin-bottom: 28px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--purple-light); color: var(--accent-purple); border: 1px solid #ddd6fe;
+      padding: 5px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; margin-bottom: 12px;
+    }
+    .hero-card h1 { font-size: 1.7rem; line-height: 1.25; color: #0f172a; margin-bottom: 10px; }
+    .hero-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+    .problem-box {
+      background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+      border: 1px solid #bfdbfe; border-left: 5px solid #2563eb;
+      border-radius: var(--radius-md); padding: 20px; margin-bottom: 22px;
+    }
+    .problem-box h2 { font-size: 1.15rem; color: #1e3a8a; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .incident-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+    .incident-item { background: rgba(255, 255, 255, 0.95); border: 1px solid #dbeafe; border-radius: var(--radius-sm); padding: 12px; font-size: 0.9rem; }
+    .incident-item strong { display: block; color: #1d4ed8; margin-bottom: 4px; }
+    .profile-setup {
+      background: var(--card-soft); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 18px; display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 14px; align-items: end;
+    }
+    .send-grid {
+      display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;
+    }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    input[type="text"], input[type="number"], select {
+      width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: var(--radius-sm);
+      font-size: 0.95rem; background: #ffffff; color: var(--text-main); outline: none;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 18px; border-radius: var(--radius-sm); font-size: 0.94rem; font-weight: 600;
+      border: none; cursor: pointer; transition: all 0.2s ease;
+    }
+    .btn-primary { background: var(--primary); color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25); }
+    .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+    .btn-success { background: var(--success); color: #ffffff; }
+    .btn-success:hover:not(:disabled) { background: #15803d; }
+    .btn-outline { background: #ffffff; color: var(--text-main); border: 1px solid #cbd5e1; }
+    .btn-outline:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; }
+    .stage-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      margin-bottom: 26px; box-shadow: var(--shadow-sm); overflow: hidden; transition: all 0.3s ease;
+    }
+    .stage-card.locked { opacity: 0.72; background: #f8fafc; }
+    .stage-header {
+      padding: 18px 24px; background: linear-gradient(90deg, #f8fafc 0%, #eff6ff 100%);
+      border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .stage-card.completed .stage-header { background: linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%); border-bottom-color: var(--success-border); }
+    .stage-title-wrap { display: flex; align-items: center; gap: 12px; }
+    .stage-num {
+      width: 38px; height: 38px; border-radius: 10px; background: var(--primary); color: #fff;
+      font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0;
+    }
+    .stage-card.locked .stage-num { background: #94a3b8; }
+    .stage-card.completed .stage-num { background: var(--success); }
+    .stage-header h3 { font-size: 1.18rem; color: #0f172a; }
+    .stage-tag { font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: #e2e8f0; color: var(--text-muted); }
+    .stage-tag.unlocked { background: var(--primary-light); color: var(--primary); }
+    .stage-tag.done { background: var(--success-light); color: var(--success); }
+    .stage-body { padding: 24px; }
+    .theory-zone { background: var(--amber-light); border: 1px solid var(--amber-border); border-radius: var(--radius-md); padding: 20px; margin-bottom: 22px; }
+    .theory-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .theory-header h4 { color: #92400e; font-size: 1.06rem; display: flex; align-items: center; gap: 8px; }
+    .theory-content { color: #451a03; font-size: 0.95rem; }
+    .theory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 12px 0; }
+    .theory-mini-card { background: #ffffff; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 12px; font-size: 0.9rem; }
+    .theory-mini-card strong { color: #b45309; display: block; margin-bottom: 4px; }
+    .formula-pill {
+      display: inline-block; background: #fef3c7; border: 1px solid #f59e0b; color: #78350f;
+      padding: 4px 10px; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.84rem; margin-top: 6px; font-weight: 600;
+    }
+    .key-gate { margin-top: 16px; padding-top: 16px; border-top: 1px dashed #f59e0b; }
+    .key-gate-q { font-weight: 700; color: #78350f; margin-bottom: 10px; font-size: 0.95rem; }
+    .gate-options { display: flex; flex-direction: column; gap: 8px; }
+    .gate-option {
+      text-align: left; background: #ffffff; border: 1px solid #fcd34d; padding: 11px 14px;
+      border-radius: var(--radius-sm); cursor: pointer; font-size: 0.92rem; color: var(--text-main); transition: all 0.2s;
+    }
+    .gate-option:hover:not(:disabled) { background: #fef3c7; border-color: #f59e0b; }
+    .gate-option.correct { background: var(--success-light); border-color: var(--success); color: #14532d; font-weight: 600; }
+    .gate-option.wrong { background: var(--danger-light); border-color: var(--danger); color: #7f1d1d; }
+    .sim-zone { border: 2px solid var(--primary-border); border-radius: var(--radius-md); background: #ffffff; overflow: hidden; }
+    .sim-locked-banner { background: #f1f5f9; padding: 28px 20px; text-align: center; color: var(--text-muted); }
+    .sim-locked-banner .big-lock { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+    .sim-topbar {
+      background: #1e293b; color: #f8fafc; padding: 10px 18px; display: flex;
+      align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.86rem;
+    }
+    .sim-dots { display: flex; gap: 6px; align-items: center; }
+    .sim-dots span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .sim-workspace { padding: 20px; background: #f8fafc; }
+    .task-card {
+      background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+    }
+    .task-card.solved { border-color: var(--success); background: #fafffc; }
+    .task-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 0.82rem; color: var(--text-light); margin-bottom: 8px; }
+    .data-preview {
+      background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 10px 14px; border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.86rem; margin-bottom: 12px; color: #0f172a; line-height: 1.5;
+    }
+    .action-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .feedback-msg { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.9rem; display: none; }
+    .feedback-msg.show { display: block; }
+    .feedback-msg.ok { background: var(--success-light); border: 1px solid var(--success-border); color: #14532d; }
+    .feedback-msg.err { background: var(--danger-light); border: 1px solid var(--danger-border); color: #7f1d1d; }
+
+    /* Візуалізація теплових карт Кохонена (SOM) */
+    .som-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .som-card {
+      background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius-sm);
+      padding: 12px; text-align: center;
+    }
+    .som-card h5 { font-size: 0.92rem; color: #0f172a; margin-bottom: 8px; }
+    .som-matrix {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
+      max-width: 190px; margin: 0 auto 8px; padding: 6px; background: #e2e8f0; border-radius: 8px;
+    }
+    .som-cell {
+      aspect-ratio: 1; border-radius: 4px; position: relative;
+      display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff;
+    }
+    .som-cell.target-zone { outline: 2px solid #0f172a; z-index: 2; }
+    .c-hi { background: #b91c1c; }      /* Темно-червоний — максимум */
+    .c-midhi { background: #ea580c; }   /* Помаранчевий */
+    .c-mid { background: #eab308; }     /* Жовтий */
+    .c-midlo { background: #64748b; }   /* Сіро-синій */
+    .c-lo { background: #1e3a8a; }      /* Темно-синій — мінімум */
+    .som-legend {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;
+    }
+    .legend-bar {
+      width: 160px; height: 10px; border-radius: 999px;
+      background: linear-gradient(90deg, #1e3a8a 0%, #64748b 30%, #eab308 60%, #b91c1c 100%);
+    }
+
+    /* Таблиця транзакцій Apriori */
+    .tx-table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 0.88rem; }
+    .tx-table th, .tx-table td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; }
+    .tx-table th { background: #e2e8f0; color: #0f172a; }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 10px 0; }
+    .check-pill {
+      display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1;
+      padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.89rem;
+    }
+    .check-pill input { width: 16px; height: 16px; accent-color: var(--primary); }
+
+    /* Матриці та конструктор Pipeline */
+    .matrix-row {
+      background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; align-items: center;
+    }
+    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .output-screen { background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); padding: 16px; margin-top: 14px; }
+    .meter-bar { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+    .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #10b981); transition: width 0.4s ease; }
+
+    /* Сертифікат */
+    .cert-card {
+      display: none; background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ecfdf5 100%);
+      border: 3px double #2563eb; border-radius: var(--radius-lg); padding: 34px; box-shadow: var(--shadow-md);
+      text-align: center; margin-top: 30px;
+    }
+    .cert-card.visible { display: block; }
+    .cert-seal { font-size: 3.2rem; margin-bottom: 10px; }
+    .cert-title { font-size: 1.62rem; color: #1e3a8a; margin-bottom: 6px; }
+    .cert-recipient {
+      font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 14px 0 6px;
+      padding: 8px 20px; background: #ffffff; border-radius: 999px; display: inline-block; border: 1px solid var(--primary-border);
+    }
+    .cert-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 22px 0; text-align: left; }
+    .cert-stat { background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+    .cert-stat span { font-size: 0.82rem; color: var(--text-light); display: block; }
+    .cert-stat strong { font-size: 1.05rem; color: var(--primary); }
+    .send-result-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md);
+      padding: 18px; margin-bottom: 20px; text-align: left;
+    }
+    .send-result-box h4 {
+      color: #1e40af; margin-bottom: 10px; font-size: 1rem; display: flex; align-items: center; gap: 8px;
+    }
+    .courses-list { text-align: left; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin-bottom: 20px; font-size: 0.92rem; }
+    .courses-list ul { margin-left: 20px; margin-top: 8px; }
+    .engine-status { text-align: center; margin-top: 24px; font-size: 0.88rem; color: var(--danger); font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .profile-setup, .matrix-row, .send-grid { grid-template-columns: 1fr; }
+      .step-track { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media print {
+      .topbar, .hero-card, .stage-card, .no-print, .engine-status { display: none !important; }
+      .cert-card { display: block !important; box-shadow: none; border: 2px solid #1e3a8a; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span>🧠 Місія «Data Mining: Архітектура прихованих закономірностей»</span></div>
+      <div class="stats-pills">
+        <span class="pill amber" id="keysPill">🔑 Ключі: 0 / 5</span>
+        <span class="pill green" id="scorePill">⭐ Індекс аналітика: 0 балів</span>
+      </div>
+    </div>
+    <nav class="step-track" aria-label="Етапи квесту">
+      <div class="step-dot active" id="nav-0">📊 0. Кейс</div>
+      <div class="step-dot" id="nav-1">🔓 1. Нейромережі</div>
+      <div class="step-dot" id="nav-2">🔒 2. Карти Кохонена</div>
+      <div class="step-dot" id="nav-3">🔒 3. Асоціації</div>
+      <div class="step-dot" id="nav-4">🔒 4. Apriori</div>
+      <div class="step-dot" id="nav-5">🔒 5. Data Pipeline</div>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ЕТАП 0: ВСТУП ТА ПОСТАНОВКА ЗАДАЧІ -->
+    <section class="hero-card" id="stage-0">
+      <div class="hero-badge">📘 Інтерактивний тренажер із некерованого навчання (Unsupervised Learning)</div>
+      <h1>Data Mining: від топології нейронних мереж до логіки асоціативних правил 🔍</h1>
+      <p class="hero-subtitle">
+        Виступайте в ролі провідного аналітика даних! На кожному етапі спершу здобудьте <strong>Теоретичний ключ 🔑</strong>, щоб розблокувати <strong>інтерактивну лабораторію 🎮</strong> та знайти приховані закономірності в сирих даних без попередніх еталонів.
+      </p>
+
+      <div class="problem-box">
+        <h2>📊 Стартовий кейс: Аналітичний аудит центру «DataPulse»</h2>
+        <p>До лабораторії надійшли великі масиви нерозмічених даних, для яких потрібно обрати правильні методи інтелектуального аналізу (Data Mining):</p>
+        <div class="incident-grid">
+          <div class="incident-item">
+            <strong>🏦 Банківський сектор (SOM):</strong>
+            Багатовимірні показники банків (прибутковість активів <code>pr_a</code>, депозити юр. осіб <code>du</code>, активи <code>akt</code>) потрібно спроєктувати на 2D-карту кластерів.
+          </div>
+          <div class="incident-item">
+            <strong>🛒 Ритейл та чеки (Асоціації):</strong>
+            Потрібно знайти приховані зв'язки між товарами («Якщо купують А, то куплять і Б») для крос-продажів та оптимізації полиць.
+          </div>
+          <div class="incident-item">
+            <strong>⚡ Обчислювальна оптимізація:</strong>
+            Мільйони комбінацій товарів перевантажують пам'ять — необхідно застосувати апріорне відсікання (Pruning) та фільтр «Золотої середини».
+          </div>
+          <div class="incident-item">
+            <strong>⚙️ Якість вхідних даних:</strong>
+            Без очищення викидів, перевірки репрезентативності та нормалізації у діапазон <code>[0..1]</code> жоден алгоритм не побудує коректну модель.
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-setup">
+        <div class="form-group">
+          <label for="userName">👤 Ваше ім'я та прізвище (для сертифіката):</label>
+          <input type="text" id="userName" placeholder="Наприклад: Олена Коваленко" />
+        </div>
+        <div class="form-group">
+          <label for="userTrack">🎯 Ваш напрям підготовки / спеціалізація:</label>
+          <select id="userTrack">
+            <option value="Інформатика та аналіз даних">💻 Інформатика та інтелектуальний аналіз даних</option>
+            <option value="Бізнес-аналітика та фінанси">📈 Бізнес-аналітика та фінансовий моніторинг</option>
+            <option value="Штучний інтелект та машинне навчання">🤖 Штучний інтелект та машинне навчання</option>
+            <option value="Маркетинг та аналіз поведінки клієнтів">🛒 Ритейл-аналітика та поведінкові патерни</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="btnStartQuest">🚀 Розпочати дослідження</button>
+      </div>
+    </section>
+
+    <!-- ЕТАП 1 -->
+    <article class="stage-card" id="stage-1">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <div class="stage-num">1</div>
+          <div>
+            <h3>Етап 1. Архітектура некерованого навчання та таксономія нейромереж 🧠</h3>
+            <small style="color: var(--text-light);">Просторова vs логічна структура та матриця архітектур нейронних мереж</small>
+          </div>
+        </div>
+        <span class="stage-tag unlocked" id="tag-1">⏳ Очікує ключ</span>
+      </div>
+
+      <div class="stage-body">
+        <div class="theory-zone">
+          <div class="theory-header">
+            <h4>🔑 Теоретичний ключ №1: Два підходи Unsupervised Learning та 4 квадранти мереж</h4>
+            <span class="pill amber">Слайди 2–3</span>
+          </div>
+          <div class="theory-content">
+            <p>
+              <strong>Некеруване навчання (Unsupervised Learning)</strong> — це пошук прихованих закономірностей у сирих даних <em>без попередніх еталонів (учителя)</em>. Воно поділяється на два головні напрями:
+            </p>
+            <div class="theory-grid">
+              <div class="theory-mini-card">
+                <strong>🗺️ Просторова структура (Карти Кохонена):</strong>
+                Кластеризація багатовимірних даних і пошук топологічних зв'язків. Відповідає на запитання: <em>«Які об'єкти схожі між собою?»</em>
+              </div>
+              <div class="theory-mini-card">
+                <strong>🔗 Логічна структура (Асоціативні правила):</strong>
+                Аналіз ринкового кошика та транзакцій у потоках подій. Відповідає на запитання: <em>«Яка подія слідує за іншою?»</em>
+              </div>
+              <div class="theory-mini-card">
+                <strong>📐 Таксономія нейромереж (4 квадранти):</strong>
+                • <em>З учителем + Пряме поширення:</em> Персептрони, Back Propagation.<br>
+                • <em>Без учителя + Пряме поширення:</em> <strong>Карти Кохонена (SOM)</strong>.<br>
+                • <em>З учителем + Зворотні зв'язки:</em> Рекурентні мережі (Елмана).<br>
+                • <em>Без учителя + Зворотні зв'язки:</em> Мережі Хопфілда (асоціативна пам'ять).
+              </div>
+            </div>
+
+            <div class="key-gate" id="gate-1">
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №1: Яка архітектура нейронної мережі поєднує некероване навчання (без учителя) та пряме поширення сигналу?</div>
+              <div class="gate-options">
+                <button type="button" class="gate-option" data-gate="1" data-ok="0">А) Мережі зворотного поширення помилки (Back Propagation).</button>
+                <button type="button" class="gate-option" data-gate="1" data-ok="1">Б) Карти Кохонена (Self-Organizing Maps).</button>
+                <button type="button" class="gate-option" data-gate="1" data-ok="0">В) Рекурентні мережі Елмана.</button>
+              </div>
+              <div class="feedback-msg" id="gate-fb-1"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-zone" id="sim-1">
+          <div class="sim-locked-banner" id="sim-lock-1">
+            <span class="big-lock">🔒</span>
+            <strong>Симуляція заблокована!</strong>
+            <p>Активуйте Теоретичний ключ №1 вище, щоб відкрити Архітектурний диспетчер Data Mining.</p>
+          </div>
+          <div id="sim-content-1" style="display: none;">
+            <div class="sim-topbar">
+              <div class="sim-dots">
+                <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
+                <strong style="margin-left:8px;">🖥️ Симуляція 1: Вибір архітектури під бізнес-задачу</strong>
+              </div>
+              <span id="sim1-counter">Вирішено: 0 / 4</span>
+            </div>
+            <div class="sim-workspace">
+              <p style="margin-bottom: 14px; font-size: 0.93rem;">Оберіть адекватний метод або архітектуру нейронної мережі для кожного з 4 запитів:</p>
+
+              <div class="task-card" id="s1-case-1">
+                <div class="task-meta"><span><strong>Задача #1 (Глибока сегментація без еталонів)</strong></span><span>Статус: <span id="s1-st-1">⏳ Очікує</span></span></div>
+                <div class="data-preview">Дані: безперервні фінансові метрики 200 підприємств. Відомих класів немає. Потрібно візуально згрупувати схожі підприємства на 2D-площині та виявити аномалії.</div>
+                <div class="action-row">
+                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="1">🗺️ Карти Кохонена (Self-Organizing Maps)</button>
+                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="0">🛒 Асоціативні правила</button>
+                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="0">🎓 Персептрон із учителем</button>
+                </div>
+                <div class="feedback-msg" id="s1-fb-1"></div>
+              </div>
+
+              <div class="task-card" id="s1-case-2">
+                <div class="task-meta"><span><strong>Задача #2 (Аналіз ринкового кошика та крос-продажі)</strong></span><span>Статус: <span id="s1-st-2">⏳ Очікує</span></span></div>
+                <div class="data-preview">Дані: дискретні чеки покупок та журнали кліків Web-блогів. Потрібно знайти логічні закономірності виду «Якщо відбулася подія А, то відбудеться подія Б».</div>
+                <div class="action-row">
+                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="0">🧠 Мережа Хопфілда</button>
+                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="1">🔗 Асоціативні правила</button>
+                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="0">🔄 Рекурентна мережа Елмана</button>
+                </div>
+                <div class="feedback-msg" id="s1-fb-2"></div>
+              </div>
+
+              <div class="task-card" id="s1-case-3">
+                <div class="task-meta"><span><strong>Задача #3 (Відновлення зашумлених образів без учителя)</strong></span><span>Статус: <span id="s1-st-3">⏳ Очікує</span></span></div>
+                <div class="data-preview">Умова: потрібна рекурентна (зі зворотними зв'язками) нейронна мережа без учителя, що працює як асоціативна пам'ять.</div>
+                <div class="action-row">
+                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="1">🧩 Мережі Хопфілда (асоціативна пам'ять)</button>
+                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="0">🗺️ Карти Кохонена (SOM)</button>
+                </div>
+                <div class="feedback-msg" id="s1-fb-3"></div>
+              </div>
+
+              <div class="task-card" id="s1-case-4">
+                <div class="task-meta"><span><strong>Задача #4 (Класифікація за готовою розміткою)</strong></span><span>Статус: <span id="s1-st-4">⏳ Очікує</span></span></div>
+                <div class="data-preview">Умова: є еталонна навчальна вибірка з відомими правильними відповідями (з учителем) та прямим поширенням сигналу.</div>
+                <div class="action-row">
+                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="0">🔗 Асоціативні правила</button>
+                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="1">📐 Персептрони / Back Propagation</button>
+                </div>
+                <div class="feedback-msg" id="s1-fb-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ЕТАП 2 -->
+    <article class="stage-card locked" id="stage-2">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <div class="stage-num">2</div>
+          <div>
+            <h3>Етап 2. Карти Кохонена (SOM): топологія та дешифрування теплових карт 🗺️</h3>
+            <small style="color: var(--text-light);">Змагальне навчання, зменшення розмірності та синтез банківських кластерів</small>
+          </div>
+        </div>
+        <span class="stage-tag" id="tag-2">🔒 Заблоковано</span>
+      </div>
+
+      <div class="stage-body">
+        <div class="theory-zone">
+          <div class="theory-header">
+            <h4>🔑 Теоретичний ключ №2: Як працює SOM та як читати теплову карту</h4>
+            <span class="pill amber">Слайди 4–6</span>
+          </div>
+          <div class="theory-content">
+            <div class="theory-grid">
+              <div class="theory-mini-card">
+                <strong>🧬 Механізм SOM:</strong>
+                Через <strong>змагальне навчання (Self-Organization)</strong> складний $n$-вимірний простір ознак проєктується на <strong>двовимірну матрицю</strong> (зменшення розмірності). За біологічною аналогією з корою мозку схожі об'єкти опиняються поруч.
+              </div>
+              <div class="theory-mini-card">
+                <strong>🌡️ Колірна шкала теплової карти:</strong>
+                • <strong>Темно-червоний:</strong> максимальні значення ознаки.<br>
+                • <strong>Темно-синій:</strong> мінімальні значення ознаки.<br>
+                • <strong>Замкнені області:</strong> границі кластерів.
+              </div>
+              <div class="theory-mini-card">
+                <strong>📍 Правило комплексного аналізу:</strong>
+                Розташування об'єкта (наприклад, у верхньому правому куті) <strong>залишається незмінним на всіх картах входів</strong>, що дозволяє зіставляти різні показники одного кластера!
+              </div>
+            </div>
+
+            <div class="key-gate" id="gate-2">
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №2: Завдяки чому аналітик може порівнювати різні показники одного кластера на кількох картах Кохонена?</div>
+              <div class="gate-options">
+                <button type="button" class="gate-option" data-gate="2" data-ok="1">А) Розташування конкретного об'єкта (наприклад, у верхньому правому куті) залишається незмінним на всіх картах входів.</button>
+                <button type="button" class="gate-option" data-gate="2" data-ok="0">Б) Усі карти входів мають однаковий червоний колір у кожній комірці.</button>
+                <button type="button" class="gate-option" data-gate="2" data-ok="0">В) Карти Кохонена автоматично видаляють усі ознаки, крім однієї.</button>
+              </div>
+              <div class="feedback-msg" id="gate-fb-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-zone" id="sim-2">
+          <div class="sim-locked-banner" id="sim-lock-2">
+            <span class="big-lock">🔒</span>
+            <strong>Симуляція заблокована!</strong>
+            <p>Активуйте Теоретичний ключ №2, щоб відкрити Лабораторію дешифрування теплових карт.</p>
+          </div>
+          <div id="sim-content-2" style="display: none;">
+            <div class="sim-topbar">
+              <div class="sim-dots">
+                <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
+                <strong style="margin-left:8px;">🌡️ Симуляція 2: Синтез даних — Кластеризація банківського сектору</strong>
+              </div>
+              <span id="sim2-counter">Виконано кроків синтезу: 0 / 3</span>
+            </div>
+            <div class="sim-workspace">
+              <p style="margin-bottom: 12px; font-size: 0.93rem;">Зіставте виділений кластер <strong>[★] у верхньому правому куті</strong> на трьох картах входів банківського сектору:</p>
+
+              <div class="som-legend">
+                <span>Мінімум (синій)</span>
+                <div class="legend-bar"></div>
+                <span>Максимум (червоний)</span>
+              </div>
+
+              <div class="som-grid-3">
+                <div class="som-card">
+                  <h5>1. Прибутковість активів (<code>pr_a</code>)</h5>
+                  <div class="som-matrix">
+                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midhi target-zone">★</div><div class="som-cell c-hi target-zone">★</div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-hi target-zone">★</div><div class="som-cell c-hi target-zone">★</div>
+                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midhi"></div><div class="som-cell c-midhi"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-mid"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
+                  </div>
+                  <small style="color:var(--text-light);">Верхній правий кут: темно-червоний</small>
+                </div>
+
+                <div class="som-card">
+                  <h5>2. Депозити юр. осіб (<code>du</code>)</h5>
+                  <div class="som-matrix">
+                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
+                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-mid"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midhi"></div><div class="som-cell c-midhi"></div>
+                  </div>
+                  <small style="color:var(--text-light);">Верхній правий кут: темно-синій</small>
+                </div>
+
+                <div class="som-card">
+                  <h5>3. Загальні активи (<code>akt</code>)</h5>
+                  <div class="som-matrix">
+                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
+                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midlo"></div>
+                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midlo"></div>
+                  </div>
+                  <small style="color:var(--text-light);">Верхній правий кут: темно-синій</small>
+                </div>
+              </div>
+
+              <div class="task-card" id="s2-q-1">
+                <div><strong>Крок 2.1 (Спостереження за картою <code>pr_a</code>):</strong> Що означає темно-червоний колір у зоні <code>[★]</code> на першій карті?</div>
+                <div class="action-row" style="margin-top:8px;">
+                  <button type="button" class="btn btn-outline" data-sim2="1" data-ok="1">🔥 Максимальну прибутковість активів у цьому кластері</button>
+                  <button type="button" class="btn btn-outline" data-sim2="1" data-ok="0">❄️ Мінімальну прибутковість (збитковість)</button>
+                </div>
+                <div class="feedback-msg" id="s2-fb-1"></div>
+              </div>
+
+              <div class="task-card" id="s2-q-2">
+                <div><strong>Крок 2.2 (Зіставлення з <code>du</code> та <code>akt</code>):</strong> Які значення депозитів юр. осіб та активів характерні для цієї ж зони <code>[★]</code>?</div>
+                <div class="action-row" style="margin-top:8px;">
+                  <button type="button" class="btn btn-outline" data-sim2="2" data-ok="0">🔴 Максимальні (червоні зони)</button>
+                  <button type="button" class="btn btn-outline" data-sim2="2" data-ok="1">🔵 Низькі / мінімальні значення (темно-сині зони)</button>
+                </div>
+                <div class="feedback-msg" id="s2-fb-2"></div>
+              </div>
+
+              <div class="task-card" id="s2-q-3">
+                <div><strong>Крок 2.3 (Бізнес-синтез):</strong> Який аналітичний висновок випливає з поєднання «низькі активи та депозити + висока прибутковість»?</div>
+                <div class="action-row" style="margin-top:8px;">
+                  <button type="button" class="btn btn-outline" data-sim2="3" data-ok="1">💎 Це унікальна група невеликих, але високомаржинальних банків</button>
+                  <button type="button" class="btn btn-outline" data-sim2="3" data-ok="0">🏛️ Це найбільші державні системні банки з низькою рентабельністю</button>
+                </div>
+                <div class="feedback-msg" id="s2-fb-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ЕТАП 3 -->
+    <article class="stage-card locked" id="stage-3">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <div class="stage-num">3</div>
+          <div>
+            <h3>Етап 3. Логіка асоціативних правил: Support, Confidence та «Золота середина» 🛒</h3>
+            <small style="color: var(--text-light);">Статистична частота правил «Якщо А, то Б» та відсікання інформаційного шуму</small>
+          </div>
+        </div>
+        <span class="stage-tag" id="tag-3">🔒 Заблоковано</span>
+      </div>
+
+      <div class="stage-body">
+        <div class="theory-zone">
+          <div class="theory-header">
+            <h4>🔑 Теоретичний ключ №3: Метрики Support, Confidence та «Золота середина»</h4>
+            <span class="pill amber">Слайди 7–9</span>
+          </div>
+          <div class="theory-content">
+            <div class="theory-grid">
+              <div class="theory-mini-card">
+                <strong>📊 Підтримка (Support):</strong>
+                Показує, як часто набір <code>(A + B)</code> зустрічається у всій базі транзакцій:<br>
+                <span class="formula-pill">Support = N(A + B) / N(Усі)</span>
+              </div>
+              <div class="theory-mini-card">
+                <strong>🎯 Вірогідність (Confidence):</strong>
+                Ймовірність того, що купуючи <code>A</code>, куплять і <code>B</code>:<br>
+                <span class="formula-pill">Confidence = N(A + B) / N(A)</span>
+              </div>
+              <div class="theory-mini-card">
+                <strong>⚖️ Матриця «Золотої середини»:</strong>
+                • <em>Низькі Support + Confidence:</em> Інформаційний шум (випадкові збіги).<br>
+                • <em>Надвисокі Support + Confidence:</em> Очевидні правила (немає бізнес-цінності).<br>
+                • <em>Оптимальні пороги:</em> <strong>«Золота середина» (Зона інсайтів)</strong>.
+              </div>
+            </div>
+
+            <div class="key-gate" id="gate-3">
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №3: У базі з 6 транзакцій «Флешка (А)» зустрічається у 4 чеках, а набір «Флешка + USB-подовжувач (А + Б)» — у 3 чеках. Чому дорівнюють Support та Confidence?</div>
+              <div class="gate-options">
+                <button type="button" class="gate-option" data-gate="3" data-ok="1">А) Support = 3 / 6 = 50%, а Confidence = 3 / 4 = 75%.</button>
+                <button type="button" class="gate-option" data-gate="3" data-ok="0">Б) Support = 4 / 6 = 67%, а Confidence = 3 / 6 = 50%.</button>
+                <button type="button" class="gate-option" data-gate="3" data-ok="0">В) Обидва показники дорівнюють 100%.</button>
+              </div>
+              <div class="feedback-msg" id="gate-fb-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-zone" id="sim-3">
+          <div class="sim-locked-banner" id="sim-lock-3">
+            <span class="big-lock">🔒</span>
+            <strong>Симуляція заблокована!</strong>
+            <p>Активуйте Теоретичний ключ №3, щоб відкрити Калькулятор асоціативних правил.</p>
+          </div>
+          <div id="sim-content-3" style="display: none;">
+            <div class="sim-topbar">
+              <div class="sim-dots">
+                <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
+                <strong style="margin-left:8px;">🧮 Симуляція 3: Розрахунок метрик та фільтр «Золотої середини»</strong>
+              </div>
+              <span id="sim3-counter">Етап у процесі</span>
+            </div>
+            <div class="sim-workspace">
+              <div class="task-card">
+                <strong>Завдання 3.1. Обчисліть метрики для правила <code>Ноутбук (A) → Миша (B)</code>:</strong>
+                <div class="data-preview" style="margin-top:8px;">
+                  Журнал магазину містить <strong>10 транзакцій</strong>:<br>
+                  • Набір <code>{Ноутбук + Миша}</code> зафіксовано у <strong>4 чеках</strong>;<br>
+                  • Загалом товар <code>Ноутбук</code> зустрічається у <strong>5 чеках</strong>.
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                  <div class="form-group">
+                    <label for="calc-sup">Підтримка Support (%):</label>
+                    <input type="number" id="calc-sup" placeholder="Введіть число (напр. 40)" />
+                  </div>
+                  <div class="form-group">
+                    <label for="calc-conf">Вірогідність Confidence (%):</label>
+                    <input type="number" id="calc-conf" placeholder="Введіть число (напр. 80)" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="task-card">
+                <strong>Завдання 3.2. Класифікуйте 3 згенеровані правила за матрицею «Золотої середини»:</strong>
+                <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+                  <div>
+                    <label style="font-size:0.9rem; font-weight:600;">1) Правило X (Support = 0.5%, Confidence = 6%):</label>
+                    <select id="gold-1" style="margin-top:4px;">
+                      <option value="">-- Оберіть категорію --</option>
+                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
+                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
+                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:0.9rem; font-weight:600;">2) Правило Y (Support = 28%, Confidence = 82% — неочікуваний зв'язок для крос-продажів):</label>
+                    <select id="gold-2" style="margin-top:4px;">
+                      <option value="">-- Оберіть категорію --</option>
+                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
+                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
+                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:0.9rem; font-weight:600;">3) Правило Z (Support = 95%, Confidence = 99% — «Купуючи смартфон, купують коробку»):</label>
+                    <select id="gold-3" style="margin-top:4px;">
+                      <option value="">-- Оберіть категорію --</option>
+                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
+                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
+                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top:14px;">
+                  <button type="button" class="btn btn-primary" id="btnCheckSim3">✅ Перевірити розрахунки та класифікацію</button>
+                </div>
+                <div class="feedback-msg" id="sim3-fb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ЕТАП 4 -->
+    <article class="stage-card locked" id="stage-4">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <div class="stage-num">4</div>
+          <div>
+            <h3>Етап 4. Еволюція алгоритмів та принцип Apriori (Pruning) ✂️</h3>
+            <small style="color: var(--text-light);">Від AIS/SETM до прориву Apriori: апріорне відсікання комбінацій</small>
+          </div>
+        </div>
+        <span class="stage-tag" id="tag-4">🔒 Заблоковано</span>
+      </div>
+
+      <div class="stage-body">
+        <div class="theory-zone">
+          <div class="theory-header">
+            <h4>🔑 Теоретичний ключ №4: Покоління алгоритмів та закон антимонотонности Apriori</h4>
+            <span class="pill amber">Слайди 10–12</span>
+          </div>
+          <div class="theory-content">
+            <div class="theory-grid">
+              <div class="theory-mini-card">
+                <strong>🐢 Покоління 1 (AIS та SETM):</strong>
+                Генерували кандидатів «на льоту» під час сканування БД. Проблема: надмірна кількість кандидатів та перевантаження пам'яті.
+              </div>
+              <div class="theory-mini-card">
+                <strong>🚀 Покоління 2 (Apriori та модифікації):</strong>
+                Розділили формування та підрахунок. Подальші вдосконалення: <strong>Aprioritid</strong> (кодування кандидатів), <strong>Apriorihybrid</strong>, <strong>DHP</strong> (хеш-таблиці), <strong>PARTITION & DIC</strong> (блочне сканування).
+              </div>
+              <div class="theory-mini-card">
+                <strong>✂️ Принцип Apriori (Pruning):</strong>
+                <em>«Якщо набір не є частим, жодна з його надмножин не може бути частою».</em> Це скорочує кількість обчислень у тисячі разів!
+              </div>
+            </div>
+
+            <div class="key-gate" id="gate-4">
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №4: Якщо 2-елементний набір {a, d} має Support = 2 при мінімальному порозі Min_sup = 3, що робить механізм Pruning у алгоритмі Apriori?</div>
+              <div class="gate-options">
+                <button type="button" class="gate-option" data-gate="4" data-ok="0">А) Усе одно генерує всі 3-елементні комбінації з {a, d} для повторної перевірки в базі.</button>
+                <button type="button" class="gate-option" data-gate="4" data-ok="1">Б) Відкидає {a, d} і автоматично відсікає всі його надмножини (напр., {a, b, d}, {a, c, d}) без сканування БД.</button>
+                <button type="button" class="gate-option" data-gate="4" data-ok="0">В) Знижує поріг Min_sup до 1, щоб зберегти рідкісні товари.</button>
+              </div>
+              <div class="feedback-msg" id="gate-fb-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-zone" id="sim-4">
+          <div class="sim-locked-banner" id="sim-lock-4">
+            <span class="big-lock">🔒</span>
+            <strong>Симуляція заблокована!</strong>
+            <p>Активуйте Теоретичний ключ №4, щоб запустити Покроковий фільтр Apriori.</p>
+          </div>
+          <div id="sim-content-4" style="display: none;">
+            <div class="sim-topbar">
+              <div class="sim-dots">
+                <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
+                <strong style="margin-left:8px;">✂️ Симуляція 4: Apriori в дії — Покрокова фільтрація (Min_sup = 3)</strong>
+              </div>
+              <span id="sim4-counter">Етап у процесі</span>
+            </div>
+            <div class="sim-workspace">
+              <p style="font-size:0.93rem;">Вихідна таблиця сирих транзакцій (умова: <strong>Min_sup = 3</strong>):</p>
+              <table class="tx-table">
+                <thead>
+                  <tr><th>TID</th><th>Придбані покупки</th><th>TID</th><th>Придбані покупки</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>100</td><td><code>a, b, c</code></td><td>400</td><td><code>e, d</code></td></tr>
+                  <tr><td>200</td><td><code>b, d</code></td><td>500</td><td><code>a, b, c, d</code></td></tr>
+                  <tr><td>300</td><td><code>b, a, d, c</code></td><td>600</td><td><code>f</code></td></tr>
+                </tbody>
+              </table>
+
+              <div class="task-card">
+                <strong>Крок 4.1. Позначте 1-елементні набори, які будуть ВІДКИНУТІ на 1-му проході (Support &lt; 3):</strong>
+                <div class="checkbox-grid">
+                  <label class="check-pill"><input type="checkbox" id="ap-a"> Набір {a} (Support = 3)</label>
+                  <label class="check-pill"><input type="checkbox" id="ap-b"> Набір {b} (Support = 4)</label>
+                  <label class="check-pill"><input type="checkbox" id="ap-e"> Набір {e} (Support = 1)</label>
+                  <label class="check-pill"><input type="checkbox" id="ap-f"> Набір {f} (Support = 1)</label>
+                </div>
+              </div>
+
+              <div class="task-card">
+                <strong>Крок 4.2. Після 2-го проходу набір <code>{a, d}</code> має Support = 2 (&lt; 3) і відсікається (Pruning). Який 3-елементний набір залишиться у фіналі?</strong>
+                <select id="ap-final" style="margin-top:8px;">
+                  <option value="">-- Оберіть фінальний частий набір --</option>
+                  <option value="abc">{a, b, c} (Support = 3: Флешка, DVD-диск, USB-подовжувач)</option>
+                  <option value="abd">{a, b, d} (містить нечастий піднабір {a, d})</option>
+                  <option value="def">{d, e, f} (Support = 0)</option>
+                </select>
+                <div style="margin-top:14px;">
+                  <button type="button" class="btn btn-primary" id="btnCheckSim4">✅ Виконати фільтрацію Apriori</button>
+                </div>
+                <div class="feedback-msg" id="sim4-fb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ЕТАП 5 -->
+    <article class="stage-card locked" id="stage-5">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <div class="stage-num">5</div>
+          <div>
+            <h3>Етап 5. Архітектура Data Pipeline та підсумковий синтез моделі ⚙️</h3>
+            <small style="color: var(--text-light);">Очищення, репрезентативність, нормалізація [0..1] та порівняння SOM vs Асоціативні правила</small>
+          </div>
+        </div>
+        <span class="stage-tag" id="tag-5">🔒 Заблоковано</span>
+      </div>
+
+      <div class="stage-body">
+        <div class="theory-zone">
+          <div class="theory-header">
+            <h4>🔑 Теоретичний ключ №5: 4 етапи Data Pipeline та порівняння методів</h4>
+            <span class="pill amber">Слайди 13–15</span>
+          </div>
+          <div class="theory-content">
+            <div class="theory-grid">
+              <div class="theory-mini-card">
+                <strong>🔄 Конвеєр Data Pipeline:</strong>
+                1) <strong>Сирі дані</strong> (великий обсяг транзакцій/характеристик);<br>
+                2) <strong>Очищення</strong> (виявлення викидів та усунення протиріч);<br>
+                3) <strong>Репрезентативність</strong> (адекватне відображення генеральної сукупності);<br>
+                4) <strong>Нормалізація</strong> (перетворення числових даних у діапазон <code>[0..1]</code>).
+              </div>
+              <div class="theory-mini-card">
+                <strong>🗺️ Карти Кохонена (SOM):</strong>
+                • <em>Природа даних:</em> безперервні багатовимірні показники.<br>
+                • <em>Математичний фокус:</em> зменшення просторової розмірності (<strong>Евклідова відстань</strong>).<br>
+                • <em>Результат:</em> 2D-карта кластерів.
+              </div>
+              <div class="theory-mini-card">
+                <strong>🔗 Асоціативні правила:</strong>
+                • <em>Природа даних:</em> дискретні транзакційні події.<br>
+                • <em>Математичний фокус:</em> статистична частота (<strong>Підтримка та Вірогідність</strong>).<br>
+                • <em>Результат:</em> логічні правила «Якщо А, то Б».
+              </div>
+            </div>
+
+            <div class="key-gate" id="gate-5">
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №5: У який числовий діапазон перетворюються дані на фінальному кроці конвеєра підготовки (Нормалізація)?</div>
+              <div class="gate-options">
+                <button type="button" class="gate-option" data-gate="5" data-ok="0">А) У діапазон від -100 до +100.</button>
+                <button type="button" class="gate-option" data-gate="5" data-ok="1">Б) У діапазон [0..1] шляхом трансформації вхідного вектора в одиничний.</button>
+                <button type="button" class="gate-option" data-gate="5" data-ok="0">В) Нормалізація потрібна лише для текстових чеків, а не для числових метрик.</button>
+              </div>
+              <div class="feedback-msg" id="gate-fb-5"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-zone" id="sim-5">
+          <div class="sim-locked-banner" id="sim-lock-5">
+            <span class="big-lock">🔒</span>
+            <strong>Симуляція заблокована!</strong>
+            <p>Активуйте фінальний Теоретичний ключ №5, щоб зібрати еталонний Data Pipeline.</p>
+          </div>
+          <div id="sim-content-5" style="display: none;">
+            <div class="sim-topbar">
+              <div class="sim-dots">
+                <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
+                <strong style="margin-left:8px;">⚙️ Симуляція 5: Конструктор еталонного Data Pipeline</strong>
+              </div>
+              <span id="sim5-counter">Фінальний крок (ціль: 100%)</span>
+            </div>
+            <div class="sim-workspace">
+              <p style="margin-bottom: 12px; font-size: 0.93rem;">Налаштуйте всі 4 етапи конвеєра підготовки даних та оберіть математичний фокус для побудови еталонної моделі:</p>
+              <div class="pipeline-grid">
+                <div class="form-group">
+                  <label>Етап 1 (Очищення):</label>
+                  <select id="pl-clean">
+                    <option value="0">Залишити викиди та суперечливі записи як є</option>
+                    <option value="25">Виявити викиди та усунути протиріччя у сирих даних</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Етап 2 (Вибірка):</label>
+                  <select id="pl-repr">
+                    <option value="0">Взяти випадкові 10 записів без перевірки</option>
+                    <option value="25">Перевірити репрезентативність (відображення генеральної сукупності)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Етап 3 (Нормалізація):</label>
+                  <select id="pl-norm">
+                    <option value="0">Залишити різні шкали (мільйони гривень і відсотки)</option>
+                    <option value="25">Перетворити числові дані у діапазон [0..1] (одиничний вектор)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Етап 4 (Математичний фокус):</label>
+                  <select id="pl-math">
+                    <option value="0">Випадковий перебір без порогів</option>
+                    <option value="25">SOM: Евклідова відстань | Асоціації: Support та Confidence</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-success" id="btnBuildPipeline">🏆 Запустити Data Pipeline та отримати Сертифікат</button>
+
+              <div class="output-screen" id="pipeline-result-box" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>📊 Готовність еталонної моделі Data Mining:</strong>
+                  <strong id="pipeline-score-text" style="color: var(--primary);">0%</strong>
+                </div>
+                <div class="meter-bar"><div class="meter-fill" id="pipeline-meter"></div></div>
+                <div class="data-preview" id="assembled-pipeline"></div>
+                <div class="feedback-msg" id="sim5-fb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ФІНАЛЬНИЙ СЕРТИФІКАТ -->
+    <section class="cert-card" id="final-cert">
+      <div class="cert-seal">🏆🧠📊</div>
+      <div class="hero-badge">МІСІЮ УСПІШНО ВИКОНАНО! ПРИХОВАНІ ЗАКОНОМІРНОСТІ РОЗКРИТО</div>
+      <h2 class="cert-title">СЕРТИФІКАТ АНАЛІТИКА DATA MINING ТА UNSUPERVISED LEARNING</h2>
+      <p style="color: var(--text-muted);">Підтверджує опанування архітектури Карт Кохонена (SOM), Асоціативних правил, алгоритму Apriori та Data Pipeline</p>
+
+      <div class="cert-recipient" id="cert-name">Аналітик даних</div>
+      <div style="color: var(--text-muted); font-weight: 600;" id="cert-track">Спеціалізація</div>
+
+      <div class="cert-details">
+        <div class="cert-stat"><span>🔑 Зібрані теоретичні ключі:</span><strong>5 із 5 (100% опанування)</strong></div>
+        <div class="cert-stat"><span>⭐ Індекс майстерності Data Mining:</span><strong id="cert-score">0 балів</strong></div>
+        <div class="cert-stat"><span>⚙️ Статус моделі:</span><strong>Еталонний Data Pipeline [0..1]</strong></div>
+      </div>
+
+      <!-- БЛОК ВІДПРАВЛЕННЯ РЕЗУЛЬТАТУ ВИКЛАДАЧУ -->
+      <div class="send-result-box no-print">
+        <h4>📩 Надіслати результат проходження квесту на пошту викладача:</h4>
+        <div class="send-grid">
+          <div class="form-group">
+            <label for="certInputName">👤 Прізвище та ім'я учасника:</label>
+            <input type="text" id="certInputName" placeholder="Введіть ваше ПІБ" />
+          </div>
+          <div class="form-group">
+            <label for="certInputOrg">🏫 Навчальний заклад / група або email:</label>
+            <input type="text" id="certInputOrg" placeholder="Наприклад: Група ІН-21 / email@ukr.net" />
+          </div>
+          <button type="button" class="btn btn-success" id="btnSendEmail">📤 Надіслати результат</button>
+        </div>
+        <div class="feedback-msg" id="send-fb"></div>
+      </div>
+
+      <div class="courses-list">
+        <strong>🛠️ Інструменти для практичної реалізації моделей Data Mining:</strong>
+        <ul>
+          <li><strong>Orange Data Mining:</strong> візуальні віджети <em>Self-Organizing Map (SOM)</em>, <em>Frequent Itemsets</em> та <em>Association Rules</em> без програмування.</li>
+          <li><strong>Python (MiniSom / SimpSOM):</strong> побудова та візуалізація шестикутних теплових карт Кохонена.</li>
+          <li><strong>Python (mlxtend):</strong> реалізація алгоритмів <code>apriori</code>, <code>fpgrowth</code> та <code>association_rules</code> з фільтрацією за <em>support</em> і <em>confidence</em>.</li>
+        </ul>
+      </div>
+
+      <div class="no-print" style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary" id="btnPrintCert">🖨️ Роздрукувати / Зберегти в PDF</button>
+        <button type="button" class="btn btn-outline" id="btnRestartQuest">🔄 Пройти квест ще раз</button>
+      </div>
+    </section>
+
+    <div class="engine-status" id="engineStatus">
+      ⚠️ Якщо ви бачите це повідомлення червоним, переконайтеся, що файл скопійовано повністю до тегу &lt;/html&gt;.
+    </div>
+
+  </main>
+
+  <script>
+    (function () {
+      function initQuest() {
+        var statusEl = document.getElementById('engineStatus');
+        if (statusEl) {
+          statusEl.style.color = '#16a34a';
+          statusEl.textContent = '🟢 Інтерактивний рушій квесту Data Mining активний — натискайте на варіанти відповідей!';
+        }
+
+        var state = {
+          score: 0,
+          keysUnlocked: 0,
+          gates: { 1: false, 2: false, 3: false, 4: false, 5: false },
+          sim1Done: { 1: false, 2: false, 3: false, 4: false },
+          sim2Done: { 1: false, 2: false, 3: false },
+          sim3Completed: false,
+          sim4Completed: false,
+          sim5Completed: false,
+          emailSent: false
+        };
+
+        function addScore(points) {
+          state.score += points;
+          document.getElementById('keysPill').textContent = '🔑 Ключі: ' + state.keysUnlocked + ' / 5';
+          document.getElementById('scorePill').textContent = '⭐ Індекс аналітика: ' + state.score + ' балів';
+        }
+
+        function unlockNextStage(currentStage) {
+          var card = document.getElementById('stage-' + currentStage);
+          card.classList.add('completed');
+          var tag = document.getElementById('tag-' + currentStage);
+          tag.className = 'stage-tag done';
+          tag.textContent = '✅ Етап пройдено';
+
+          var navCurr = document.getElementById('nav-' + currentStage);
+          navCurr.classList.remove('active');
+          navCurr.classList.add('done');
+          navCurr.textContent = navCurr.textContent.replace('🔓', '✅').replace('🔒', '✅');
+
+          var nextStage = currentStage + 1;
+          if (nextStage <= 5) {
+            var nextCard = document.getElementById('stage-' + nextStage);
+            nextCard.classList.remove('locked');
+            var nextTag = document.getElementById('tag-' + nextStage);
+            nextTag.className = 'stage-tag unlocked';
+            nextTag.textContent = '⏳ Очікує ключ';
+
+            var navNext = document.getElementById('nav-' + nextStage);
+            navNext.classList.add('active');
+            navNext.textContent = navNext.textContent.replace('🔒', '🔓');
+          }
+        }
+
+        var certInputName = document.getElementById('certInputName');
+        if (certInputName) {
+          certInputName.addEventListener('input', function () {
+            document.getElementById('cert-name').textContent = certInputName.value.trim() || 'Аналітик даних центру «DataPulse»';
+          });
+        }
+
+        document.body.addEventListener('click', function (e) {
+          var btn = e.target.closest('button');
+          if (!btn) return;
+
+          if (btn.id === 'btnStartQuest') {
+            var nav0 = document.getElementById('nav-0');
+            nav0.classList.remove('active');
+            nav0.classList.add('done');
+            nav0.textContent = '✅ 0. Кейс';
+            document.getElementById('nav-1').classList.add('active');
+            document.getElementById('stage-1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+
+          if (btn.hasAttribute('data-gate')) {
+            var stageNum = Number(btn.getAttribute('data-gate'));
+            var isOk = btn.getAttribute('data-ok') === '1';
+            if (state.gates[stageNum]) return;
+            var fb = document.getElementById('gate-fb-' + stageNum);
+            if (isOk) {
+              state.gates[stageNum] = true;
+              state.keysUnlocked++;
+              addScore(20);
+              Array.from(btn.parentElement.children).forEach(function (c) { c.disabled = true; });
+              btn.classList.add('correct');
+              fb.className = 'feedback-msg show ok';
+              fb.innerHTML = '🔑 <strong>Ключ №' + stageNum + ' активовано (+20 балів)!</strong> Лабораторію нижче розблоковано.';
+              document.getElementById('sim-lock-' + stageNum).style.display = 'none';
+              document.getElementById('sim-content-' + stageNum).style.display = 'block';
+              document.getElementById('tag-' + stageNum).textContent = '🎮 Лабораторія відкрита';
+            } else {
+              btn.classList.add('wrong');
+              fb.className = 'feedback-msg show err';
+              fb.innerHTML = '⚠️ Не зовсім так. Перегляньте теоретичну картку вище та спробуйте ще раз!';
+            }
+            return;
+          }
+
+          if (btn.hasAttribute('data-sim1')) {
+            var caseNum = Number(btn.getAttribute('data-sim1'));
+            var ok1 = btn.getAttribute('data-ok') === '1';
+            if (state.sim1Done[caseNum]) return;
+            var fb1 = document.getElementById('s1-fb-' + caseNum);
+            var st1 = document.getElementById('s1-st-' + caseNum);
+            if (ok1) {
+              state.sim1Done[caseNum] = true;
+              addScore(15);
+              document.getElementById('s1-case-' + caseNum).classList.add('solved');
+              st1.innerHTML = '<strong style="color:var(--success);">✅ Визначено</strong>';
+              fb1.className = 'feedback-msg show ok';
+              fb1.innerHTML = '🧠 <strong>Точний вибір (+15 балів)!</strong> Архітектура відповідає природі даних та поставленій задачі.';
+              var count1 = Object.values(state.sim1Done).filter(Boolean).length;
+              document.getElementById('sim1-counter').textContent = 'Вирішено: ' + count1 + ' / 4';
+              if (count1 === 4) unlockNextStage(1);
+            } else {
+              fb1.className = 'feedback-msg show err';
+              fb1.innerHTML = '⚠️ Невідповідна архітектура. Звірте наявність учителя (еталонів) та тип зв’язків у таксономії.';
+            }
+            return;
+          }
+
+          if (btn.hasAttribute('data-sim2')) {
+            var qNum = Number(btn.getAttribute('data-sim2'));
+            var ok2 = btn.getAttribute('data-ok') === '1';
+            if (state.sim2Done[qNum]) return;
+            var fb2 = document.getElementById('s2-fb-' + qNum);
+            if (ok2) {
+              state.sim2Done[qNum] = true;
+              addScore(20);
+              document.getElementById('s2-q-' + qNum).classList.add('solved');
+              fb2.className = 'feedback-msg show ok';
+              fb2.innerHTML = '🌡️ <strong>Правильно (+20 балів)!</strong> Дешифрування теплової карти виконано.';
+              var count2 = Object.values(state.sim2Done).filter(Boolean).length;
+              document.getElementById('sim2-counter').textContent = 'Виконано кроків синтезу: ' + count2 + ' / 3';
+              if (count2 === 3) unlockNextStage(2);
+            } else {
+              fb2.className = 'feedback-msg show err';
+              fb2.innerHTML = '⚠️ Погляньте на колірну шкалу: синій колір означає мінімум, темно-червоний — максимум ознаки.';
+            }
+            return;
+          }
+
+          if (btn.id === 'btnCheckSim3') {
+            var supVal = Number(document.getElementById('calc-sup').value);
+            var confVal = Number(document.getElementById('calc-conf').value);
+            var g1 = document.getElementById('gold-1').value;
+            var g2 = document.getElementById('gold-2').value;
+            var g3 = document.getElementById('gold-3').value;
+            var fb3 = document.getElementById('sim3-fb');
+
+            if (supVal === 40 && confVal === 80 && g1 === 'noise' && g2 === 'gold' && g3 === 'obvious') {
+              if (!state.sim3Completed) {
+                state.sim3Completed = true;
+                addScore(40);
+                document.getElementById('sim3-counter').textContent = '✅ Виконано';
+                unlockNextStage(3);
+              }
+              fb3.className = 'feedback-msg show ok';
+              fb3.innerHTML = '🛒 <strong>Бездоганно (+40 балів)!</strong> Support = 4/10 (40%), Confidence = 4/5 (80%), а матрицю «Золотої середини» заповнено вірно. Етап 4 розблоковано!';
+            } else {
+              fb3.className = 'feedback-msg show err';
+              fb3.innerHTML = '⚠️ Перевірте: Support = (4 / 10) × 100 = 40%, Confidence = (4 / 5) × 100 = 80%; у 3.2: 1 — шум, 2 — золота середина, 3 — очевидне правило.';
+            }
+            return;
+          }
+
+          if (btn.id === 'btnCheckSim4') {
+            var cA = document.getElementById('ap-a').checked;
+            var cB = document.getElementById('ap-b').checked;
+            var cE = document.getElementById('ap-e').checked;
+            var cF = document.getElementById('ap-f').checked;
+            var apFinal = document.getElementById('ap-final').value;
+            var fb4 = document.getElementById('sim4-fb');
+
+            if (!cA && !cB && cE && cF && apFinal === 'abc') {
+              if (!state.sim4Completed) {
+                state.sim4Completed = true;
+                addScore(40);
+                document.getElementById('sim4-counter').textContent = '✅ Фільтрацію завершено';
+                unlockNextStage(4);
+              }
+              fb4.className = 'feedback-msg show ok';
+              fb4.innerHTML = '✂️ <strong>Принцип Pruning спрацював безпомилково (+40 балів)!</strong> Відкинуто {e}, {f} (Support = 1), відсічено надмножини {a, d}, а у фіналі отримано {a, b, c} (Support = 3). Фінальний Етап 5 розблоковано!';
+            } else {
+              fb4.className = 'feedback-msg show err';
+              fb4.innerHTML = '⚠️ Уточніть фільтрацію: при Min_sup = 3 відкидаються набори зі Support = 1 ({e} та {f}), а фінальним частим набором є {a, b, c}.';
+            }
+            return;
+          }
+
+          if (btn.id === 'btnBuildPipeline') {
+            var p1 = Number(document.getElementById('pl-clean').value);
+            var p2 = Number(document.getElementById('pl-repr').value);
+            var p3 = Number(document.getElementById('pl-norm').value);
+            var p4 = Number(document.getElementById('pl-math').value);
+            var total = p1 + p2 + p3 + p4;
+
+            document.getElementById('pipeline-result-box').style.display = 'block';
+            document.getElementById('pipeline-score-text').textContent = total + '%';
+            document.getElementById('pipeline-meter').style.width = total + '%';
+
+            document.getElementById('assembled-pipeline').innerHTML =
+              '<strong>Конфігурація Data Pipeline:</strong><br>' +
+              '1. Очищення: ' + (p1 ? '✅ Викиди та протиріччя усунено' : '❌ Сирі дані містять шум') + '<br>' +
+              '2. Вибірка: ' + (p2 ? '✅ Репрезентативність підтверджено' : '❌ Нерепрезентативна вибірка') + '<br>' +
+              '3. Нормалізація: ' + (p3 ? '✅ Дані трансформовано у діапазон [0..1]' : '❌ Неузгоджені масштаби ознак') + '<br>' +
+              '4. Математичний апарат: ' + (p4 ? '✅ Евклідова відстань (SOM) та Support/Confidence (Apriori)' : '❌ Не визначено');
+
+            var fb5 = document.getElementById('sim5-fb');
+            if (total === 100) {
+              if (!state.sim5Completed) {
+                state.sim5Completed = true;
+                addScore(40);
+                document.getElementById('sim5-counter').textContent = '✅ Модель готова (100%)';
+                unlockNextStage(5);
+              }
+              fb5.className = 'feedback-msg show ok';
+              fb5.innerHTML = '🏆 <strong>Еталонну модель Data Mining побудовано (100%, +40 балів)!</strong> Усі 5 етапів квесту завершено, ваш сертифікат сформовано нижче.';
+
+              var rawName = document.getElementById('userName').value.trim();
+              document.getElementById('cert-name').textContent = rawName || 'Аналітик даних центру «DataPulse»';
+              document.getElementById('certInputName').value = rawName;
+              document.getElementById('cert-track').textContent = 'Напрям: ' + document.getElementById('userTrack').value;
+              document.getElementById('cert-score').textContent = state.score + ' із 340 балів';
+
+              var cert = document.getElementById('final-cert');
+              cert.classList.add('visible');
+              cert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              fb5.className = 'feedback-msg show err';
+              fb5.innerHTML = '⚠️ Поточна готовність конвеєра: <strong>' + total + '%</strong>. Оберіть усі 4 коректні етапи підготовки та аналізу, щоб отримати сертифікат!';
+            }
+            return;
+          }
+
+          if (btn.id === 'btnSendEmail') {
+            if (state.emailSent) return;
+            var participantName = document.getElementById('certInputName').value.trim();
+            var participantOrg = document.getElementById('certInputOrg').value.trim();
+            var sendFb = document.getElementById('send-fb');
+
+            if (!participantName) {
+              sendFb.className = 'feedback-msg show err';
+              sendFb.innerHTML = '⚠️ Будь ласка, введіть ваше прізвище та ім’я перед надсиланням результату викладачу.';
+              document.getElementById('certInputName').focus();
+              return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Надсилання...';
+            sendFb.className = 'feedback-msg';
+
+            var payload = {
+              _subject: 'Результат квесту «Data Mining»: ' + participantName,
+              Учасник: participantName,
+              Заклад_або_контакт: participantOrg || 'Не вказано',
+              Напрям: document.getElementById('userTrack').value,
+              Набрані_бали: state.score + ' із 340 балів',
+              Зібрані_ключі: state.keysUnlocked + ' із 5',
+              Дата_проходження: new Date().toLocaleString('uk-UA')
+            };
+
+            fetch('https://formspree.io/f/maeoozyz', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            })
+              .then(function (response) {
+                if (response.ok) {
+                  state.emailSent = true;
+                  btn.textContent = '✅ Результат надіслано';
+                  sendFb.className = 'feedback-msg show ok';
+                  sendFb.innerHTML = '📩 <strong>Успішно надіслано!</strong> Ваш сертифікат та результати квесту передано на пошту викладача.';
+                } else {
+                  throw new Error('Помилка сервера Formspree');
+                }
+              })
+              .catch(function () {
+                btn.disabled = false;
+                btn.textContent = '📤 Надіслати результат';
+                sendFb.className = 'feedback-msg show err';
+                sendFb.innerHTML = '⚠️ Не вдалося надіслати результат. Перевірте підключення до інтернету та спробуйте ще раз.';
+              });
+            return;
+          }
+
+          if (btn.id === 'btnPrintCert') { window.print(); return; }
+          if (btn.id === 'btnRestartQuest') { location.reload(); return; }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuest);
+      } else {
+        initQuest();
+      }
+    })();
+  </script>
+</body>
+</html>
