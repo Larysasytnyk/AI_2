@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Місія «Data Mining: Архітектура прихованих закономірностей» — Інтерактивний квест</title>
+  <title>Місія «ШІ як ІЗН: Створення компетентнісних завдань» — Інтерактивний квест</title>
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #f0f6ff 0%, #f8fafc 50%, #eefbf5 100%);
@@ -104,11 +104,11 @@
       display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;
     }
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
-    input[type="text"], input[type="number"], select {
+    input[type="text"], select {
       width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: var(--radius-sm);
       font-size: 0.95rem; background: #ffffff; color: var(--text-main); outline: none;
     }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    input[type="text"]:focus, select:focus {
       border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
     .btn {
@@ -150,14 +150,15 @@
     .theory-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .theory-header h4 { color: #92400e; font-size: 1.06rem; display: flex; align-items: center; gap: 8px; }
     .theory-content { color: #451a03; font-size: 0.95rem; }
-    .theory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 12px 0; }
+    .theory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 12px 0; }
     .theory-mini-card { background: #ffffff; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 12px; font-size: 0.9rem; }
     .theory-mini-card strong { color: #b45309; display: block; margin-bottom: 4px; }
-    .formula-pill {
-      display: inline-block; background: #fef3c7; border: 1px solid #f59e0b; color: #78350f;
-      padding: 4px 10px; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.84rem; margin-top: 6px; font-weight: 600;
-    }
+    .eddl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 12px 0; }
+    .eddl-card { background: #ffffff; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 12px; font-size: 0.88rem; }
+    .eddl-card.e { border-top: 4px solid #eab308; }
+    .eddl-card.d1 { border-top: 4px solid #2563eb; }
+    .eddl-card.d2 { border-top: 4px solid #ea580c; }
+    .eddl-card.l { border-top: 4px solid #16a34a; }
     .key-gate { margin-top: 16px; padding-top: 16px; border-top: 1px dashed #f59e0b; }
     .key-gate-q { font-weight: 700; color: #78350f; margin-bottom: 10px; font-size: 0.95rem; }
     .gate-options { display: flex; flex-direction: column; gap: 8px; }
@@ -186,67 +187,24 @@
     .task-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 0.82rem; color: var(--text-light); margin-bottom: 8px; }
     .data-preview {
       background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 10px 14px; border-radius: 6px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.86rem; margin-bottom: 12px; color: #0f172a; line-height: 1.5;
+      font-size: 0.9rem; margin-bottom: 12px; color: #0f172a; line-height: 1.5;
     }
     .action-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .feedback-msg { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.9rem; display: none; }
     .feedback-msg.show { display: block; }
     .feedback-msg.ok { background: var(--success-light); border: 1px solid var(--success-border); color: #14532d; }
     .feedback-msg.err { background: var(--danger-light); border: 1px solid var(--danger-border); color: #7f1d1d; }
-
-    /* Візуалізація теплових карт Кохонена (SOM) */
-    .som-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
-    .som-card {
-      background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius-sm);
-      padding: 12px; text-align: center;
-    }
-    .som-card h5 { font-size: 0.92rem; color: #0f172a; margin-bottom: 8px; }
-    .som-matrix {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
-      max-width: 190px; margin: 0 auto 8px; padding: 6px; background: #e2e8f0; border-radius: 8px;
-    }
-    .som-cell {
-      aspect-ratio: 1; border-radius: 4px; position: relative;
-      display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff;
-    }
-    .som-cell.target-zone { outline: 2px solid #0f172a; z-index: 2; }
-    .c-hi { background: #b91c1c; }      /* Темно-червоний — максимум */
-    .c-midhi { background: #ea580c; }   /* Помаранчевий */
-    .c-mid { background: #eab308; }     /* Жовтий */
-    .c-midlo { background: #64748b; }   /* Сіро-синій */
-    .c-lo { background: #1e3a8a; }      /* Темно-синій — мінімум */
-    .som-legend {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;
-    }
-    .legend-bar {
-      width: 160px; height: 10px; border-radius: 999px;
-      background: linear-gradient(90deg, #1e3a8a 0%, #64748b 30%, #eab308 60%, #b91c1c 100%);
-    }
-
-    /* Таблиця транзакцій Apriori */
-    .tx-table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 0.88rem; }
-    .tx-table th, .tx-table td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; }
-    .tx-table th { background: #e2e8f0; color: #0f172a; }
-    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 10px 0; }
-    .check-pill {
-      display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1;
-      padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.89rem;
-    }
-    .check-pill input { width: 16px; height: 16px; accent-color: var(--primary); }
-
-    /* Матриці та конструктор Pipeline */
     .matrix-row {
       background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; align-items: center;
+      padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.45fr 1fr; gap: 12px; align-items: center;
     }
-    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .output-screen { background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); padding: 16px; margin-top: 14px; }
-    .meter-bar { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
-    .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #10b981); transition: width 0.4s ease; }
-
-    /* Сертифікат */
+    .candle-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm);
+      padding: 14px; margin: 12px 0; font-size: 0.9rem;
+    }
+    .candle-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+    .candle-item { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; }
+    .self-eval-box { background: var(--purple-light); border: 1px solid #ddd6fe; border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; }
     .cert-card {
       display: none; background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ecfdf5 100%);
       border: 3px double #2563eb; border-radius: var(--radius-lg); padding: 34px; box-shadow: var(--shadow-md);
@@ -275,7 +233,7 @@
     .engine-status { text-align: center; margin-top: 24px; font-size: 0.88rem; color: var(--danger); font-weight: 600; }
 
     @media (max-width: 768px) {
-      .profile-setup, .matrix-row, .send-grid { grid-template-columns: 1fr; }
+      .profile-setup, .matrix-row, .send-grid, .candle-bars { grid-template-columns: 1fr; }
       .step-track { grid-template-columns: repeat(3, 1fr); }
     }
     @media print {
@@ -288,70 +246,71 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand"><span>🧠 Місія «Data Mining: Архітектура прихованих закономірностей»</span></div>
+      <div class="brand"><span>🎯 Місія «ШІ як ІЗН: Компетентнісні завдання»</span></div>
       <div class="stats-pills">
         <span class="pill amber" id="keysPill">🔑 Ключі: 0 / 5</span>
-        <span class="pill green" id="scorePill">⭐ Індекс аналітика: 0 балів</span>
+        <span class="pill green" id="scorePill">⭐ Індекс методиста: 0 балів</span>
       </div>
     </div>
     <nav class="step-track" aria-label="Етапи квесту">
-      <div class="step-dot active" id="nav-0">📊 0. Кейс</div>
-      <div class="step-dot" id="nav-1">🔓 1. Нейромережі</div>
-      <div class="step-dot" id="nav-2">🔒 2. Карти Кохонена</div>
-      <div class="step-dot" id="nav-3">🔒 3. Асоціації</div>
-      <div class="step-dot" id="nav-4">🔒 4. Apriori</div>
-      <div class="step-dot" id="nav-5">🔒 5. Data Pipeline</div>
+      <div class="step-dot active" id="nav-0">🚀 0. Виклик</div>
+      <div class="step-dot" id="nav-1">🔓 1. Поняття і ШІ</div>
+      <div class="step-dot" id="nav-2">🔒 2. Структура ЕДДЛ</div>
+      <div class="step-dot" id="nav-3">🔒 3. Soft Skills</div>
+      <div class="step-dot" id="nav-4">🔒 4. Алгоритм 6 кроків</div>
+      <div class="step-dot" id="nav-5">🔒 5. Арсенал ШІ</div>
     </nav>
   </header>
 
   <main class="container">
 
-    <!-- ЕТАП 0: ВСТУП ТА ПОСТАНОВКА ЗАДАЧІ -->
+    <!-- ЕТАП 0: ВСТУП -->
     <section class="hero-card" id="stage-0">
-      <div class="hero-badge">📘 Інтерактивний тренажер із некерованого навчання (Unsupervised Learning)</div>
-      <h1>Data Mining: від топології нейронних мереж до логіки асоціативних правил 🔍</h1>
+      <div class="hero-badge">📘 Інтерактивний педагогічний тренажер (День 3: ШІ як засіб навчання)</div>
+      <h1>Створення компетентнісних завдань за допомогою штучного інтелекту 🧩</h1>
       <p class="hero-subtitle">
-        Виступайте в ролі провідного аналітика даних! На кожному етапі спершу здобудьте <strong>Теоретичний ключ 🔑</strong>, щоб розблокувати <strong>інтерактивну лабораторію 🎮</strong> та знайти приховані закономірності в сирих даних без попередніх еталонів.
+        Прийміть виклик методичної лабораторії НУШ! На кожному етапі спершу здобудьте <strong>Теоретичний ключ 🔑</strong>, щоб розблокувати <strong>інтерактивну симуляцію 🎮</strong> та навчитися проєктувати життєві компетентнісні завдання за допомогою сучасних ШІ-платформ.
       </p>
 
       <div class="problem-box">
-        <h2>📊 Стартовий кейс: Аналітичний аудит центру «DataPulse»</h2>
-        <p>До лабораторії надійшли великі масиви нерозмічених даних, для яких потрібно обрати правильні методи інтелектуального аналізу (Data Mining):</p>
+        <h2>🎯 Стартовий виклик: Від репродуктивних тестів до компетентнісних кейсів</h2>
+        <p>Сучасний урок потребує переходу від простого відтворення фактів до розв'язання реальних життєвих проблем. У цій місії ви опануєте 5 ключових інструментів педагога-новатора:</p>
         <div class="incident-grid">
           <div class="incident-item">
-            <strong>🏦 Банківський сектор (SOM):</strong>
-            Багатовимірні показники банків (прибутковість активів <code>pr_a</code>, депозити юр. осіб <code>du</code>, активи <code>akt</code>) потрібно спроєктувати на 2D-карту кластерів.
+            <strong>🧠 Термінологічна точність:</strong>
+            Чітке розмежування понять <em>компетентність</em>, <em>компетенція</em> та <em>soft skills</em> і ролей учителя та учня у роботі з ШІ.
           </div>
           <div class="incident-item">
-            <strong>🛒 Ритейл та чеки (Асоціації):</strong>
-            Потрібно знайти приховані зв'язки між товарами («Якщо купують А, то куплять і Б») для крос-продажів та оптимізації полиць.
+            <strong>📐 Формула «Енергія — Дані — Дія — Лінійка»:</strong>
+            Конструювання кейсів (на кшталт <em>«Свічки різних компаній»</em>) та проєктів (<em>«Архітектура майбутнього»</em>).
           </div>
           <div class="incident-item">
-            <strong>⚡ Обчислювальна оптимізація:</strong>
-            Мільйони комбінацій товарів перевантажують пам'ять — необхідно застосувати апріорне відсікання (Pruning) та фільтр «Золотої середини».
+            <strong>💡 Розвиток Soft Skills із ШІ:</strong>
+            Дебати, гра «Правда-Вигадка», пошук ШІ-фейків, тестування альтернативних сценаріїв та вправа «Вибір реакції».
           </div>
           <div class="incident-item">
-            <strong>⚙️ Якість вхідних даних:</strong>
-            Без очищення викидів, перевірки репрезентативності та нормалізації у діапазон <code>[0..1]</code> жоден алгоритм не побудує коректну модель.
+            <strong>🛠️ Арсенал ШІ-платформ:</strong>
+            Практичне застосування <em>MagicSchool AI, Google Vids, Luma AI, Vheer</em> та <em>Padlet Arcade</em>.
           </div>
         </div>
       </div>
 
       <div class="profile-setup">
         <div class="form-group">
-          <label for="userName">👤 Ваше ім'я та прізвище (для сертифіката):</label>
-          <input type="text" id="userName" placeholder="Наприклад: Олена Коваленко" />
+          <label for="teacherName">👩‍🏫 Ваше ім'я та прізвище (для сертифіката):</label>
+          <input type="text" id="teacherName" placeholder="Наприклад: Олена Коваленко" />
         </div>
         <div class="form-group">
-          <label for="userTrack">🎯 Ваш напрям підготовки / спеціалізація:</label>
-          <select id="userTrack">
-            <option value="Інформатика та аналіз даних">💻 Інформатика та інтелектуальний аналіз даних</option>
-            <option value="Бізнес-аналітика та фінанси">📈 Бізнес-аналітика та фінансовий моніторинг</option>
-            <option value="Штучний інтелект та машинне навчання">🤖 Штучний інтелект та машинне навчання</option>
-            <option value="Маркетинг та аналіз поведінки клієнтів">🛒 Ритейл-аналітика та поведінкові патерни</option>
+          <label for="teacherSpec">🎯 Ваша освітня галузь / спеціальність:</label>
+          <select id="teacherSpec">
+            <option value="Інформатична освітня галузь / STEM">💻 Інформатика, математика, фізика, STEM</option>
+            <option value="Мовно-літературна та громадянська галузі">📚 Мови, література, історія, мистецтво</option>
+            <option value="Природнича та здоров'язбережувальна галузі">🌿 Біологія, хімія, географія, СЗО</option>
+            <option value="Початкова освіта / Інклюзивне навчання">🧩 Початкова школа / Асистент учителя</option>
+            <option value="Управління освітою / Методична робота">🏫 Адміністрація закладу / Методист</option>
           </select>
         </div>
-        <button type="button" class="btn btn-primary" id="btnStartQuest">🚀 Розпочати дослідження</button>
+        <button type="button" class="btn btn-primary" id="btnStartQuest">🚀 Розпочати місію</button>
       </div>
     </section>
 
@@ -361,8 +320,8 @@
         <div class="stage-title-wrap">
           <div class="stage-num">1</div>
           <div>
-            <h3>Етап 1. Архітектура некерованого навчання та таксономія нейромереж 🧠</h3>
-            <small style="color: var(--text-light);">Просторова vs логічна структура та матриця архітектур нейронних мереж</small>
+            <h3>Етап 1. Компетентність, компетенція, Soft Skills та роль ШІ 🧠</h3>
+            <small style="color: var(--text-light);">Розмежування базових понять і можливості ШІ для вчителя та учнів</small>
           </div>
         </div>
         <span class="stage-tag unlocked" id="tag-1">⏳ Очікує ключ</span>
@@ -371,37 +330,37 @@
       <div class="stage-body">
         <div class="theory-zone">
           <div class="theory-header">
-            <h4>🔑 Теоретичний ключ №1: Два підходи Unsupervised Learning та 4 квадранти мереж</h4>
-            <span class="pill amber">Слайди 2–3</span>
+            <h4>🔑 Теоретичний ключ №1: Тріада понять (приклад лікаря) та 5 функцій ШІ в навчанні</h4>
+            <span class="pill amber">Слайди 1–3</span>
           </div>
           <div class="theory-content">
-            <p>
-              <strong>Некеруване навчання (Unsupervised Learning)</strong> — це пошук прихованих закономірностей у сирих даних <em>без попередніх еталонів (учителя)</em>. Воно поділяється на два головні напрями:
-            </p>
             <div class="theory-grid">
               <div class="theory-mini-card">
-                <strong>🗺️ Просторова структура (Карти Кохонена):</strong>
-                Кластеризація багатовимірних даних і пошук топологічних зв'язків. Відповідає на запитання: <em>«Які об'єкти схожі між собою?»</em>
+                <strong>🏆 Компетентність:</strong>
+                Здатність ефективно діяти, досягати результатів у конкретній ситуації (знання, навички, особистісні якості, цінності, ставлення).<br>
+                <em>Приклад:</em> компетентність лікаря у лікуванні пацієнтів.
               </div>
               <div class="theory-mini-card">
-                <strong>🔗 Логічна структура (Асоціативні правила):</strong>
-                Аналіз ринкового кошика та транзакцій у потоках подій. Відповідає на запитання: <em>«Яка подія слідує за іншою?»</em>
+                <strong>⚙️ Компетенція:</strong>
+                Окремий набір знань, умінь, навичок для виконання конкретної роботи.<br>
+                <em>Приклад:</em> компетенція лікаря у діагностуванні захворювань органів травлення.
               </div>
               <div class="theory-mini-card">
-                <strong>📐 Таксономія нейромереж (4 квадранти):</strong>
-                • <em>З учителем + Пряме поширення:</em> Персептрони, Back Propagation.<br>
-                • <em>Без учителя + Пряме поширення:</em> <strong>Карти Кохонена (SOM)</strong>.<br>
-                • <em>З учителем + Зворотні зв'язки:</em> Рекурентні мережі (Елмана).<br>
-                • <em>Без учителя + Зворотні зв'язки:</em> Мережі Хопфілда (асоціативна пам'ять).
+                <strong>🤝 Soft Skills:</strong>
+                Навички взаємодії з іншими людьми без прив'язки до конкретної роботи (доречні будь-де).<br>
+                <em>Приклад:</em> навички ефективного спілкування лікаря з пацієнтами.
               </div>
             </div>
+            <p style="margin-top: 8px; font-size: 0.92rem;">
+              <strong>Роль ШІ:</strong> <em>Учитель</em> розробляє завдання та генерує критерії оцінювання; <em>учні</em> збирають інформацію, шукають рішення та отримують індивідуальний зворотний зв'язок; <em>обидва</em> створюють візуалізації (схеми, діаграми, відео, аудіо).
+            </p>
 
             <div class="key-gate" id="gate-1">
-              <div class="key-gate-q">❓ Перевірка для активації Ключа №1: Яка архітектура нейронної мережі поєднує некероване навчання (без учителя) та пряме поширення сигналу?</div>
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №1: Чим «компетентність» відрізняється від «компетенції»?</div>
               <div class="gate-options">
-                <button type="button" class="gate-option" data-gate="1" data-ok="0">А) Мережі зворотного поширення помилки (Back Propagation).</button>
-                <button type="button" class="gate-option" data-gate="1" data-ok="1">Б) Карти Кохонена (Self-Organizing Maps).</button>
-                <button type="button" class="gate-option" data-gate="1" data-ok="0">В) Рекурентні мережі Елмана.</button>
+                <button type="button" class="gate-option" data-gate="1" data-ok="0">А) Компетентність стосується лише спілкування в побуті, а компетенція — це диплом про освіту.</button>
+                <button type="button" class="gate-option" data-gate="1" data-ok="1">Б) Компетентність — це інтегрована здатність діяти й досягати результату в ситуації (включно з цінностями та ставленням), а компетенція — окремий набір знань і навичок для конкретної роботи.</button>
+                <button type="button" class="gate-option" data-gate="1" data-ok="0">В) Між цими поняттями немає жодної змістової різниці.</button>
               </div>
               <div class="feedback-msg" id="gate-fb-1"></div>
             </div>
@@ -412,57 +371,55 @@
           <div class="sim-locked-banner" id="sim-lock-1">
             <span class="big-lock">🔒</span>
             <strong>Симуляція заблокована!</strong>
-            <p>Активуйте Теоретичний ключ №1 вище, щоб відкрити Архітектурний диспетчер Data Mining.</p>
+            <p>Активуйте Теоретичний ключ №1 вище, щоб відкрити Класифікатор компетентнісного навчання.</p>
           </div>
           <div id="sim-content-1" style="display: none;">
             <div class="sim-topbar">
               <div class="sim-dots">
                 <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
-                <strong style="margin-left:8px;">🖥️ Симуляція 1: Вибір архітектури під бізнес-задачу</strong>
+                <strong style="margin-left:8px;">🖥️ Симуляція 1: Експертиза понять та ролей у ШІ-навчанні</strong>
               </div>
-              <span id="sim1-counter">Вирішено: 0 / 4</span>
+              <span id="sim1-counter">Виконано: 0 / 4</span>
             </div>
             <div class="sim-workspace">
-              <p style="margin-bottom: 14px; font-size: 0.93rem;">Оберіть адекватний метод або архітектуру нейронної мережі для кожного з 4 запитів:</p>
+              <p style="margin-bottom: 14px; font-size: 0.93rem;">Проаналізуйте 4 педагогічні кейси та визначте точну категорію для кожного:</p>
 
               <div class="task-card" id="s1-case-1">
-                <div class="task-meta"><span><strong>Задача #1 (Глибока сегментація без еталонів)</strong></span><span>Статус: <span id="s1-st-1">⏳ Очікує</span></span></div>
-                <div class="data-preview">Дані: безперервні фінансові метрики 200 підприємств. Відомих класів немає. Потрібно візуально згрупувати схожі підприємства на 2D-площині та виявити аномалії.</div>
+                <div class="task-meta"><span><strong>Кейс #1 (Профіль педагога)</strong></span><span>Статус: <span id="s1-st-1">⏳ Очікує</span></span></div>
+                <div class="data-preview">Характеристика: «Учитель інформатики вміє налаштовувати локальну мережу шкільного комп'ютерного класу та писати запити SQL».</div>
                 <div class="action-row">
-                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="1">🗺️ Карти Кохонена (Self-Organizing Maps)</button>
-                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="0">🛒 Асоціативні правила</button>
-                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="0">🎓 Персептрон із учителем</button>
+                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="1">⚙️ Компетенція (вузький набір знань і навичок для конкретної роботи)</button>
+                  <button type="button" class="btn btn-outline" data-sim1="1" data-ok="0">🤝 Soft Skills (універсальні навички взаємодії)</button>
                 </div>
                 <div class="feedback-msg" id="s1-fb-1"></div>
               </div>
 
               <div class="task-card" id="s1-case-2">
-                <div class="task-meta"><span><strong>Задача #2 (Аналіз ринкового кошика та крос-продажі)</strong></span><span>Статус: <span id="s1-st-2">⏳ Очікує</span></span></div>
-                <div class="data-preview">Дані: дискретні чеки покупок та журнали кліків Web-блогів. Потрібно знайти логічні закономірності виду «Якщо відбулася подія А, то відбудеться подія Б».</div>
+                <div class="task-meta"><span><strong>Кейс #2 (Наскрізні вміння)</strong></span><span>Статус: <span id="s1-st-2">⏳ Очікує</span></span></div>
+                <div class="data-preview">Характеристика: «Уміння конструктивно домовлятися в команді, керувати власним часом та проявляти емпатію, що однаково корисне в будь-якій професії».</div>
                 <div class="action-row">
-                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="0">🧠 Мережа Хопфілда</button>
-                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="1">🔗 Асоціативні правила</button>
-                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="0">🔄 Рекурентна мережа Елмана</button>
+                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="0">⚙️ Окрема предметна компетенція</button>
+                  <button type="button" class="btn btn-outline" data-sim1="2" data-ok="1">🤝 Soft Skills (гнучкі навички без прив'язки до конкретної роботи)</button>
                 </div>
                 <div class="feedback-msg" id="s1-fb-2"></div>
               </div>
 
               <div class="task-card" id="s1-case-3">
-                <div class="task-meta"><span><strong>Задача #3 (Відновлення зашумлених образів без учителя)</strong></span><span>Статус: <span id="s1-st-3">⏳ Очікує</span></span></div>
-                <div class="data-preview">Умова: потрібна рекурентна (зі зворотними зв'язками) нейронна мережа без учителя, що працює як асоціативна пам'ять.</div>
+                <div class="task-meta"><span><strong>Кейс #3 (Роль учителя з ШІ)</strong></span><span>Статус: <span id="s1-st-3">⏳ Очікує</span></span></div>
+                <div class="data-preview">Ситуація: «Педагог використовує ChatGPT, щоб сформувати критерії оцінювання проєктної роботи та розробити багаторівневу рубрику».</div>
                 <div class="action-row">
-                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="1">🧩 Мережі Хопфілда (асоціативна пам'ять)</button>
-                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="0">🗺️ Карти Кохонена (SOM)</button>
+                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="1">✅ Методично коректно: генерація критеріїв оцінювання — одна з функцій учителя з ШІ</button>
+                  <button type="button" class="btn btn-outline" data-sim1="3" data-ok="0">❌ Недопустимо: ШІ не можна залучати до створення критеріїв</button>
                 </div>
                 <div class="feedback-msg" id="s1-fb-3"></div>
               </div>
 
               <div class="task-card" id="s1-case-4">
-                <div class="task-meta"><span><strong>Задача #4 (Класифікація за готовою розміткою)</strong></span><span>Статус: <span id="s1-st-4">⏳ Очікує</span></span></div>
-                <div class="data-preview">Умова: є еталонна навчальна вибірка з відомими правильними відповідями (з учителем) та прямим поширенням сигналу.</div>
+                <div class="task-meta"><span><strong>Кейс #4 (Роль учня з ШІ)</strong></span><span>Статус: <span id="s1-st-4">⏳ Очікує</span></span></div>
+                <div class="data-preview">Ситуація: «Працюючи над дослідженням, учень звертається до ШІ, щоб отримати проміжний зворотний зв'язок та рекомендації щодо покращення свого плану дій».</div>
                 <div class="action-row">
-                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="0">🔗 Асоціативні правила</button>
-                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="1">📐 Персептрони / Back Propagation</button>
+                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="0">❌ Порушення: учень має право використовувати ШІ лише для малювання картинок</button>
+                  <button type="button" class="btn btn-outline" data-sim1="4" data-ok="1">✅ Продуктивно: отримання індивідуального зворотного зв'язку й пошук рішень</button>
                 </div>
                 <div class="feedback-msg" id="s1-fb-4"></div>
               </div>
@@ -478,8 +435,8 @@
         <div class="stage-title-wrap">
           <div class="stage-num">2</div>
           <div>
-            <h3>Етап 2. Карти Кохонена (SOM): топологія та дешифрування теплових карт 🗺️</h3>
-            <small style="color: var(--text-light);">Змагальне навчання, зменшення розмірності та синтез банківських кластерів</small>
+            <h3>Етап 2. Структура компетентнісного завдання: «Енергія — Дані — Дія — Лінійка» 📐</h3>
+            <small style="color: var(--text-light);">Формати завдань, кейс «Свічки різних компаній» та Методичний навігатор НУШ</small>
           </div>
         </div>
         <span class="stage-tag" id="tag-2">🔒 Заблоковано</span>
@@ -488,33 +445,39 @@
       <div class="stage-body">
         <div class="theory-zone">
           <div class="theory-header">
-            <h4>🔑 Теоретичний ключ №2: Як працює SOM та як читати теплову карту</h4>
-            <span class="pill amber">Слайди 4–6</span>
+            <h4>🔑 Теоретичний ключ №2: 4 блоки завдання та формати оцінювання</h4>
+            <span class="pill amber">Слайди 7–9</span>
           </div>
           <div class="theory-content">
-            <div class="theory-grid">
-              <div class="theory-mini-card">
-                <strong>🧬 Механізм SOM:</strong>
-                Через <strong>змагальне навчання (Self-Organization)</strong> складний $n$-вимірний простір ознак проєктується на <strong>двовимірну матрицю</strong> (зменшення розмірності). За біологічною аналогією з корою мозку схожі об'єкти опиняються поруч.
+            <p>На відміну від репродуктивного тесту (напр., <em>«Яку одиницю обрати для маси курячого яйця?»</em>), справжнє компетентнісне завдання має 4 обов'язкові складники:</p>
+            <div class="eddl-grid">
+              <div class="eddl-card e">
+                <strong>⚡ ЕНЕРГІЯ:</strong>
+                Зв'язок із реальним життям, наявність реальної проблеми, мотиваційний стимул.
               </div>
-              <div class="theory-mini-card">
-                <strong>🌡️ Колірна шкала теплової карти:</strong>
-                • <strong>Темно-червоний:</strong> максимальні значення ознаки.<br>
-                • <strong>Темно-синій:</strong> мінімальні значення ознаки.<br>
-                • <strong>Замкнені області:</strong> границі кластерів.
+              <div class="eddl-card d1">
+                <strong>📊 ДАНІ:</strong>
+                Опис ситуації, графіки, ілюстративний матеріал, ресурси, а також <em>«зайве»</em> (інформаційний шум).
               </div>
-              <div class="theory-mini-card">
-                <strong>📍 Правило комплексного аналізу:</strong>
-                Розташування об'єкта (наприклад, у верхньому правому куті) <strong>залишається незмінним на всіх картах входів</strong>, що дозволяє зіставляти різні показники одного кластера!
+              <div class="eddl-card d2">
+                <strong>⚙️ ДІЯ:</strong>
+                Власне завдання, чітка інструкція для учня (розрахувати, порівняти, спроєктувати).
+              </div>
+              <div class="eddl-card l">
+                <strong>📏 ЛІНІЙКА:</strong>
+                Очікуваний результат, критерії оцінювання, рефлексія.
               </div>
             </div>
+            <p style="font-size: 0.9rem; margin-top: 6px;">
+              <strong>Приклади форматів:</strong> проєкт <em>«Архітектура майбутнього»</em> (розрахунок площі й об'єму будівлі) або статистичний кейс <em>«Свічки різних компаній»</em>. Готові зразки доступні в <strong>Каталозі компетентнісних робіт для НУШ</strong> (<code>nus-tasks.net</code>).
+            </p>
 
             <div class="key-gate" id="gate-2">
-              <div class="key-gate-q">❓ Перевірка для активації Ключа №2: Завдяки чому аналітик може порівнювати різні показники одного кластера на кількох картах Кохонена?</div>
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №2: Який компонент компетентнісного завдання містить опис ситуації, графіки, ресурси та навмисно додану «зайву» інформацію?</div>
               <div class="gate-options">
-                <button type="button" class="gate-option" data-gate="2" data-ok="1">А) Розташування конкретного об'єкта (наприклад, у верхньому правому куті) залишається незмінним на всіх картах входів.</button>
-                <button type="button" class="gate-option" data-gate="2" data-ok="0">Б) Усі карти входів мають однаковий червоний колір у кожній комірці.</button>
-                <button type="button" class="gate-option" data-gate="2" data-ok="0">В) Карти Кохонена автоматично видаляють усі ознаки, крім однієї.</button>
+                <button type="button" class="gate-option" data-gate="2" data-ok="0">А) Енергія.</button>
+                <button type="button" class="gate-option" data-gate="2" data-ok="1">Б) Дані.</button>
+                <button type="button" class="gate-option" data-gate="2" data-ok="0">В) Лінійка.</button>
               </div>
               <div class="feedback-msg" id="gate-fb-2"></div>
             </div>
@@ -525,89 +488,75 @@
           <div class="sim-locked-banner" id="sim-lock-2">
             <span class="big-lock">🔒</span>
             <strong>Симуляція заблокована!</strong>
-            <p>Активуйте Теоретичний ключ №2, щоб відкрити Лабораторію дешифрування теплових карт.</p>
+            <p>Активуйте Теоретичний ключ №2, щоб відкрити Лабораторію проєктування кейсів.</p>
           </div>
           <div id="sim-content-2" style="display: none;">
             <div class="sim-topbar">
               <div class="sim-dots">
                 <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
-                <strong style="margin-left:8px;">🌡️ Симуляція 2: Синтез даних — Кластеризація банківського сектору</strong>
+                <strong style="margin-left:8px;">📐 Симуляція 2: Конструктор структури та аналіз кейсу «Свічки»</strong>
               </div>
-              <span id="sim2-counter">Виконано кроків синтезу: 0 / 3</span>
+              <span id="sim2-counter">Етап у процесі</span>
             </div>
             <div class="sim-workspace">
-              <p style="margin-bottom: 12px; font-size: 0.93rem;">Зіставте виділений кластер <strong>[★] у верхньому правому куті</strong> на трьох картах входів банківського сектору:</p>
+              <p style="margin-bottom: 10px; font-size: 0.93rem;"><strong>Завдання 2.1.</strong> Співвіднесіть фрагменти проєкту <em>«Архітектура майбутнього»</em> з компонентами компетентнісного завдання:</p>
 
-              <div class="som-legend">
-                <span>Мінімум (синій)</span>
-                <div class="legend-bar"></div>
-                <span>Максимум (червоний)</span>
+              <div class="matrix-row">
+                <div>1. «Міська громада оголосила конкурс на проєкт енергоефективної школи чи лікарні майбутнього для нового мікрорайону».</div>
+                <select id="eddl-1">
+                  <option value="">-- Компонент --</option>
+                  <option value="energy">⚡ ЕНЕРГІЯ (реальна проблема, стимул)</option>
+                  <option value="data">📊 ДАНІ (ситуація, ресурси, зайве)</option>
+                  <option value="action">⚙️ ДІЯ (завдання та інструкція)</option>
+                  <option value="ruler">📏 ЛІНІЙКА (результат, критерії, рефлексія)</option>
+                </select>
               </div>
 
-              <div class="som-grid-3">
-                <div class="som-card">
-                  <h5>1. Прибутковість активів (<code>pr_a</code>)</h5>
-                  <div class="som-matrix">
-                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midhi target-zone">★</div><div class="som-cell c-hi target-zone">★</div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-hi target-zone">★</div><div class="som-cell c-hi target-zone">★</div>
-                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midhi"></div><div class="som-cell c-midhi"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-mid"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
+              <div class="matrix-row">
+                <div>2. «Креслення ділянки, норми освітлення, таблиця вартості матеріалів та довідка про історію архітектури XIX ст. (зайве)».</div>
+                <select id="eddl-2">
+                  <option value="">-- Компонент --</option>
+                  <option value="energy">⚡ ЕНЕРГІЯ (реальна проблема, стимул)</option>
+                  <option value="data">📊 ДАНІ (ситуація, ресурси, зайве)</option>
+                  <option value="action">⚙️ ДІЯ (завдання та інструкція)</option>
+                  <option value="ruler">📏 ЛІНІЙКА (результат, критерії, рефлексія)</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>3. «Створіть макет будівлі з геометричних фігур, розрахуйте площу й об'єм приміщень та заповніть картку самооцінювання за рубрикою».</div>
+                <select id="eddl-3">
+                  <option value="">-- Компонент --</option>
+                  <option value="energy">⚡ ЕНЕРГІЯ (реальна проблема, стимул)</option>
+                  <option value="data">📊 ДАНІ (ситуація, ресурси, зайве)</option>
+                  <option value="action">⚙️ ДІЯ + 📏 ЛІНІЙКА (інструкція та критерії оцінювання)</option>
+                </select>
+              </div>
+
+              <div class="candle-box">
+                <strong>Завдання 2.2 (Аналіз кейсу «Свічки різних компаній» зі слайду 7):</strong>
+                <div class="candle-bars">
+                  <div class="candle-item">
+                    <strong>🕯️ «Блискуча свічка» (15 шт.):</strong><br>
+                    Медіана: <strong>58 хв</strong> | Діапазон 25–75%: <strong>57–60 хв</strong> (усі точки: 53–62 хв).
                   </div>
-                  <small style="color:var(--text-light);">Верхній правий кут: темно-червоний</small>
-                </div>
-
-                <div class="som-card">
-                  <h5>2. Депозити юр. осіб (<code>du</code>)</h5>
-                  <div class="som-matrix">
-                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
-                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-mid"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midhi"></div><div class="som-cell c-midhi"></div>
+                  <div class="candle-item">
+                    <strong>🕯️ «Мерехтлива свічка» (15 шт.):</strong><br>
+                    Медіана: <strong>60 хв</strong> | Діапазон 25–75%: <strong>56–63 хв</strong> (усі точки: 49–68 хв).
                   </div>
-                  <small style="color:var(--text-light);">Верхній правий кут: темно-синій</small>
                 </div>
-
-                <div class="som-card">
-                  <h5>3. Загальні активи (<code>akt</code>)</h5>
-                  <div class="som-matrix">
-                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
-                    <div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-lo"></div><div class="som-cell c-lo target-zone">★</div><div class="som-cell c-lo target-zone">★</div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-midlo"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midlo"></div>
-                    <div class="som-cell c-lo"></div><div class="som-cell c-lo"></div><div class="som-cell c-midlo"></div><div class="som-cell c-mid"></div><div class="som-cell c-midlo"></div>
-                  </div>
-                  <small style="color:var(--text-light);">Верхній правий кут: темно-синій</small>
+                <div style="margin-top: 10px;">
+                  <label style="font-size:0.9rem; font-weight:600;">Чи підтверджується результатами випробувань твердження компанії «Мерехтлива свічка», що її свічки в середньому горять довше?</label>
+                  <select id="candle-ans" style="margin-top:4px;">
+                    <option value="">-- Оберіть обґрунтовану відповідь --</option>
+                    <option value="yes">А) Так: медіана (60 хв > 58 хв) та верхня межа 50%-го діапазону (63 хв > 60 хв) вищі, хоча розкид значень більший</option>
+                    <option value="no">Б) Ні: у «Блискучої свічки» медіана становить 68 хвилин</option>
+                  </select>
                 </div>
               </div>
 
-              <div class="task-card" id="s2-q-1">
-                <div><strong>Крок 2.1 (Спостереження за картою <code>pr_a</code>):</strong> Що означає темно-червоний колір у зоні <code>[★]</code> на першій карті?</div>
-                <div class="action-row" style="margin-top:8px;">
-                  <button type="button" class="btn btn-outline" data-sim2="1" data-ok="1">🔥 Максимальну прибутковість активів у цьому кластері</button>
-                  <button type="button" class="btn btn-outline" data-sim2="1" data-ok="0">❄️ Мінімальну прибутковість (збитковість)</button>
-                </div>
-                <div class="feedback-msg" id="s2-fb-1"></div>
-              </div>
-
-              <div class="task-card" id="s2-q-2">
-                <div><strong>Крок 2.2 (Зіставлення з <code>du</code> та <code>akt</code>):</strong> Які значення депозитів юр. осіб та активів характерні для цієї ж зони <code>[★]</code>?</div>
-                <div class="action-row" style="margin-top:8px;">
-                  <button type="button" class="btn btn-outline" data-sim2="2" data-ok="0">🔴 Максимальні (червоні зони)</button>
-                  <button type="button" class="btn btn-outline" data-sim2="2" data-ok="1">🔵 Низькі / мінімальні значення (темно-сині зони)</button>
-                </div>
-                <div class="feedback-msg" id="s2-fb-2"></div>
-              </div>
-
-              <div class="task-card" id="s2-q-3">
-                <div><strong>Крок 2.3 (Бізнес-синтез):</strong> Який аналітичний висновок випливає з поєднання «низькі активи та депозити + висока прибутковість»?</div>
-                <div class="action-row" style="margin-top:8px;">
-                  <button type="button" class="btn btn-outline" data-sim2="3" data-ok="1">💎 Це унікальна група невеликих, але високомаржинальних банків</button>
-                  <button type="button" class="btn btn-outline" data-sim2="3" data-ok="0">🏛️ Це найбільші державні системні банки з низькою рентабельністю</button>
-                </div>
-                <div class="feedback-msg" id="s2-fb-3"></div>
-              </div>
+              <button type="button" class="btn btn-primary" id="btnCheckSim2">✅ Перевірити завдання Етапу 2</button>
+              <div class="feedback-msg" id="sim2-fb"></div>
             </div>
           </div>
         </div>
@@ -620,8 +569,8 @@
         <div class="stage-title-wrap">
           <div class="stage-num">3</div>
           <div>
-            <h3>Етап 3. Логіка асоціативних правил: Support, Confidence та «Золота середина» 🛒</h3>
-            <small style="color: var(--text-light);">Статистична частота правил «Якщо А, то Б» та відсікання інформаційного шуму</small>
+            <h3>Етап 3. Розвиток ТОП життєвих компетентностей та Soft Skills із ШІ 💡</h3>
+            <small style="color: var(--text-light);">Практичні сценарії: дебати, «Правда-Вигадка», альтернативні сценарії та емпатія</small>
           </div>
         </div>
         <span class="stage-tag" id="tag-3">🔒 Заблоковано</span>
@@ -630,35 +579,35 @@
       <div class="stage-body">
         <div class="theory-zone">
           <div class="theory-header">
-            <h4>🔑 Теоретичний ключ №3: Метрики Support, Confidence та «Золота середина»</h4>
-            <span class="pill amber">Слайди 7–9</span>
+            <h4>🔑 Теоретичний ключ №3: 10 ТОП життєвих компетентностей та ідеї вправ із ШІ</h4>
+            <span class="pill amber">Слайди 4–6</span>
           </div>
           <div class="theory-content">
+            <p><strong>ТОП-10 компетентностей:</strong> критичне мислення, комунікативні навички, емоційний інтелект, саморегуляція і керування часом, креативність, лідерство, гнучкість та адаптивність, розв'язання проблем, міжкультурне спілкування, цифрова грамотність.</p>
             <div class="theory-grid">
               <div class="theory-mini-card">
-                <strong>📊 Підтримка (Support):</strong>
-                Показує, як часто набір <code>(A + B)</code> зустрічається у всій базі транзакцій:<br>
-                <span class="formula-pill">Support = N(A + B) / N(Усі)</span>
+                <strong>🗣️ Комунікативні навички:</strong>
+                • Дебати з ШІ (професійний компаньйон);<br>
+                • Рольова гра (проблемна ситуація в спілкуванні).
               </div>
               <div class="theory-mini-card">
-                <strong>🎯 Вірогідність (Confidence):</strong>
-                Ймовірність того, що купуючи <code>A</code>, куплять і <code>B</code>:<br>
-                <span class="formula-pill">Confidence = N(A + B) / N(A)</span>
+                <strong>🔍 Критичне мислення:</strong>
+                • Гра «Правда-Вигадка» (пошук брехні в твердженнях ШІ);<br>
+                • Пошук ШІ-фейків та створення власних діпфейків для розуміння механізму.
               </div>
               <div class="theory-mini-card">
-                <strong>⚖️ Матриця «Золотої середини»:</strong>
-                • <em>Низькі Support + Confidence:</em> Інформаційний шум (випадкові збіги).<br>
-                • <em>Надвисокі Support + Confidence:</em> Очевидні правила (немає бізнес-цінності).<br>
-                • <em>Оптимальні пороги:</em> <strong>«Золота середина» (Зона інсайтів)</strong>.
+                <strong>🧩 Розв'язання проблем та EQ:</strong>
+                • <em>Проблеми:</em> ментальна карта шляхів, тестування альтернативних сценаріїв.<br>
+                • <em>Емоційний інтелект:</em> вправа «Вибір реакції» у стресі, аналіз емоційності героя твору.
               </div>
             </div>
 
             <div class="key-gate" id="gate-3">
-              <div class="key-gate-q">❓ Перевірка для активації Ключа №3: У базі з 6 транзакцій «Флешка (А)» зустрічається у 4 чеках, а набір «Флешка + USB-подовжувач (А + Б)» — у 3 чеках. Чому дорівнюють Support та Confidence?</div>
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №3: Яка ШІ-вправа спрямована на розвиток емоційного інтелекту учнів?</div>
               <div class="gate-options">
-                <button type="button" class="gate-option" data-gate="3" data-ok="1">А) Support = 3 / 6 = 50%, а Confidence = 3 / 4 = 75%.</button>
-                <button type="button" class="gate-option" data-gate="3" data-ok="0">Б) Support = 4 / 6 = 67%, а Confidence = 3 / 6 = 50%.</button>
-                <button type="button" class="gate-option" data-gate="3" data-ok="0">В) Обидва показники дорівнюють 100%.</button>
+                <button type="button" class="gate-option" data-gate="3" data-ok="0">А) Тестування альтернативних економічних сценаріїв.</button>
+                <button type="button" class="gate-option" data-gate="3" data-ok="1">Б) Вправа «Вибір реакції» (генерування стресових ситуацій з обґрунтуванням вибору) та аналіз емпатійності героя твору.</button>
+                <button type="button" class="gate-option" data-gate="3" data-ok="0">В) Розпізнавання ШІ-фейків серед картин відомих художників.</button>
               </div>
               <div class="feedback-msg" id="gate-fb-3"></div>
             </div>
@@ -669,72 +618,65 @@
           <div class="sim-locked-banner" id="sim-lock-3">
             <span class="big-lock">🔒</span>
             <strong>Симуляція заблокована!</strong>
-            <p>Активуйте Теоретичний ключ №3, щоб відкрити Калькулятор асоціативних правил.</p>
+            <p>Активуйте Теоретичний ключ №3, щоб відкрити Студію Soft Skills.</p>
           </div>
           <div id="sim-content-3" style="display: none;">
             <div class="sim-topbar">
               <div class="sim-dots">
                 <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
-                <strong style="margin-left:8px;">🧮 Симуляція 3: Розрахунок метрик та фільтр «Золотої середини»</strong>
+                <strong style="margin-left:8px;">💡 Симуляція 3: Підбір ШІ-практики під життєву компетентність</strong>
               </div>
               <span id="sim3-counter">Етап у процесі</span>
             </div>
             <div class="sim-workspace">
-              <div class="task-card">
-                <strong>Завдання 3.1. Обчисліть метрики для правила <code>Ноутбук (A) → Миша (B)</code>:</strong>
-                <div class="data-preview" style="margin-top:8px;">
-                  Журнал магазину містить <strong>10 транзакцій</strong>:<br>
-                  • Набір <code>{Ноутбук + Миша}</code> зафіксовано у <strong>4 чеках</strong>;<br>
-                  • Загалом товар <code>Ноутбук</code> зустрічається у <strong>5 чеках</strong>.
-                </div>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                  <div class="form-group">
-                    <label for="calc-sup">Підтримка Support (%):</label>
-                    <input type="number" id="calc-sup" placeholder="Введіть число (напр. 40)" />
-                  </div>
-                  <div class="form-group">
-                    <label for="calc-conf">Вірогідність Confidence (%):</label>
-                    <input type="number" id="calc-conf" placeholder="Введіть число (напр. 80)" />
-                  </div>
-                </div>
+              <p style="margin-bottom: 12px; font-size: 0.93rem;">Оберіть цільову компетентність для кожної з 4 інтерактивних вправ із ШІ:</p>
+
+              <div class="matrix-row">
+                <div>1. Гра «Правда-Вигадка»: ШІ генерує серію тверджень, учні шукають приховану помилку та вимагають аргументованого пояснення.</div>
+                <select id="ss-1">
+                  <option value="">-- Компетентність --</option>
+                  <option value="comm">Комунікативні навички</option>
+                  <option value="crit">Критичне мислення</option>
+                  <option value="prob">Розв'язання проблем</option>
+                  <option value="eq">Емоційний інтелект</option>
+                </select>
               </div>
 
-              <div class="task-card">
-                <strong>Завдання 3.2. Класифікуйте 3 згенеровані правила за матрицею «Золотої середини»:</strong>
-                <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
-                  <div>
-                    <label style="font-size:0.9rem; font-weight:600;">1) Правило X (Support = 0.5%, Confidence = 6%):</label>
-                    <select id="gold-1" style="margin-top:4px;">
-                      <option value="">-- Оберіть категорію --</option>
-                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
-                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
-                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style="font-size:0.9rem; font-weight:600;">2) Правило Y (Support = 28%, Confidence = 82% — неочікуваний зв'язок для крос-продажів):</label>
-                    <select id="gold-2" style="margin-top:4px;">
-                      <option value="">-- Оберіть категорію --</option>
-                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
-                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
-                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style="font-size:0.9rem; font-weight:600;">3) Правило Z (Support = 95%, Confidence = 99% — «Купуючи смартфон, купують коробку»):</label>
-                    <select id="gold-3" style="margin-top:4px;">
-                      <option value="">-- Оберіть категорію --</option>
-                      <option value="noise">Інформаційний шум (надто рідкісне, необґрунтоване)</option>
-                      <option value="gold">«Золота середина» (Зона цінних інсайтів)</option>
-                      <option value="obvious">Очевидне правило (загальновідомий факт, низька бізнес-цінність)</option>
-                    </select>
-                  </div>
-                </div>
-                <div style="margin-top:14px;">
-                  <button type="button" class="btn btn-primary" id="btnCheckSim3">✅ Перевірити розрахунки та класифікацію</button>
-                </div>
-                <div class="feedback-msg" id="sim3-fb"></div>
+              <div class="matrix-row">
+                <div>2. Учні будують ментальну карту та просять ШІ змоделювати наслідки, до яких призведе кожен альтернативний шлях виходу з кризи.</div>
+                <select id="ss-2">
+                  <option value="">-- Компетентність --</option>
+                  <option value="comm">Комунікативні навички</option>
+                  <option value="crit">Критичне мислення</option>
+                  <option value="prob">Розв'язання проблем</option>
+                  <option value="eq">Емоційний інтелект</option>
+                </select>
               </div>
+
+              <div class="matrix-row">
+                <div>3. Дебати з ШІ: чатбот виступає опонентом у дискусії, а учень має переконливо відстояти свою позицію в діалозі.</div>
+                <select id="ss-3">
+                  <option value="">-- Компетентність --</option>
+                  <option value="comm">Комунікативні навички</option>
+                  <option value="crit">Критичне мислення</option>
+                  <option value="prob">Розв'язання проблем</option>
+                  <option value="eq">Емоційний інтелект</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>4. Вправа «Вибір реакції»: учні аналізують стресову ситуацію, обирають модель поведінки та оцінюють рівень самоконтролю й емпатії.</div>
+                <select id="ss-4">
+                  <option value="">-- Компетентність --</option>
+                  <option value="comm">Комунікативні навички</option>
+                  <option value="crit">Критичне мислення</option>
+                  <option value="prob">Розв'язання проблем</option>
+                  <option value="eq">Емоційний інтелект</option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-primary" id="btnCheckSim3">✅ Перевірити відповідність Soft Skills</button>
+              <div class="feedback-msg" id="sim3-fb"></div>
             </div>
           </div>
         </div>
@@ -747,8 +689,8 @@
         <div class="stage-title-wrap">
           <div class="stage-num">4</div>
           <div>
-            <h3>Етап 4. Еволюція алгоритмів та принцип Apriori (Pruning) ✂️</h3>
-            <small style="color: var(--text-light);">Від AIS/SETM до прориву Apriori: апріорне відсікання комбінацій</small>
+            <h3>Етап 4. Універсальний 6-кроковий алгоритм розвитку компетентностей 🔄</h3>
+            <small style="color: var(--text-light);">Від формулювання SMART-цілей до регулярної практики, оцінки та корекції</small>
           </div>
         </div>
         <span class="stage-tag" id="tag-4">🔒 Заблоковано</span>
@@ -757,31 +699,37 @@
       <div class="stage-body">
         <div class="theory-zone">
           <div class="theory-header">
-            <h4>🔑 Теоретичний ключ №4: Покоління алгоритмів та закон антимонотонности Apriori</h4>
-            <span class="pill amber">Слайди 10–12</span>
+            <h4>🔑 Теоретичний ключ №4: 6 послідовних кроків організації навчальної діяльності</h4>
+            <span class="pill amber">Слайд 10</span>
           </div>
           <div class="theory-content">
             <div class="theory-grid">
               <div class="theory-mini-card">
-                <strong>🐢 Покоління 1 (AIS та SETM):</strong>
-                Генерували кандидатів «на льоту» під час сканування БД. Проблема: надмірна кількість кандидатів та перевантаження пам'яті.
+                <strong>1️⃣ Що розвиваємо?</strong>
+                Обираємо компетентність, формулюємо <strong>SMART-цілі</strong>, визначаємо термін і спосіб вимірювання результату.<br>
+                <strong>2️⃣ Підготовка:</strong>
+                Готуємо матеріали, ігри, критерії оцінювання та графік.
               </div>
               <div class="theory-mini-card">
-                <strong>🚀 Покоління 2 (Apriori та модифікації):</strong>
-                Розділили формування та підрахунок. Подальші вдосконалення: <strong>Aprioritid</strong> (кодування кандидатів), <strong>Apriorihybrid</strong>, <strong>DHP</strong> (хеш-таблиці), <strong>PARTITION & DIC</strong> (блочне сканування).
+                <strong>3️⃣ Працюємо:</strong>
+                Організовуємо виконання практичних завдань та ігор, де учні проявляють компетентність.<br>
+                <strong>4️⃣ Зворотний зв'язок:</strong>
+                Учні дивляться на себе «зі сторони» через рекомендації вчителя та відгуки однокласників.
               </div>
               <div class="theory-mini-card">
-                <strong>✂️ Принцип Apriori (Pruning):</strong>
-                <em>«Якщо набір не є частим, жодна з його надмножин не може бути частою».</em> Це скорочує кількість обчислень у тисячі разів!
+                <strong>5️⃣ Рефлексія:</strong>
+                Після кожного етапу учні аналізують свій новий досвід і роблять висновки на майбутнє.<br>
+                <strong>6️⃣ Регулярна практика, оцінка та корекція:</strong>
+                Пропонуємо подібні вправи, вимірюємо динаміку та корегуємо завдання.
               </div>
             </div>
 
             <div class="key-gate" id="gate-4">
-              <div class="key-gate-q">❓ Перевірка для активації Ключа №4: Якщо 2-елементний набір {a, d} має Support = 2 при мінімальному порозі Min_sup = 3, що робить механізм Pruning у алгоритмі Apriori?</div>
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №4: Яка головна відмінність між Кроком 4 («Зворотний зв'язок») та Кроком 5 («Рефлексія»)?</div>
               <div class="gate-options">
-                <button type="button" class="gate-option" data-gate="4" data-ok="0">А) Усе одно генерує всі 3-елементні комбінації з {a, d} для повторної перевірки в базі.</button>
-                <button type="button" class="gate-option" data-gate="4" data-ok="1">Б) Відкидає {a, d} і автоматично відсікає всі його надмножини (напр., {a, b, d}, {a, c, d}) без сканування БД.</button>
-                <button type="button" class="gate-option" data-gate="4" data-ok="0">В) Знижує поріг Min_sup до 1, щоб зберегти рідкісні товари.</button>
+                <button type="button" class="gate-option" data-gate="4" data-ok="1">А) Зворотний зв'язок — це погляд «зі сторони» (відгуки вчителя та інших учасників), а рефлексія — самостійний аналіз учнем власного досвіду й висновки на майбутнє.</button>
+                <button type="button" class="gate-option" data-gate="4" data-ok="0">Б) Зворотний зв'язок проводиться до початку уроку, а рефлексія — замість виставлення балів.</button>
+                <button type="button" class="gate-option" data-gate="4" data-ok="0">В) Це однакові етапи, які ніколи не поєднуються в одному модулі.</button>
               </div>
               <div class="feedback-msg" id="gate-fb-4"></div>
             </div>
@@ -792,52 +740,86 @@
           <div class="sim-locked-banner" id="sim-lock-4">
             <span class="big-lock">🔒</span>
             <strong>Симуляція заблокована!</strong>
-            <p>Активуйте Теоретичний ключ №4, щоб запустити Покроковий фільтр Apriori.</p>
+            <p>Активуйте Теоретичний ключ №4, щоб відкрити Конструктор циклу уроку.</p>
           </div>
           <div id="sim-content-4" style="display: none;">
             <div class="sim-topbar">
               <div class="sim-dots">
                 <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
-                <strong style="margin-left:8px;">✂️ Симуляція 4: Apriori в дії — Покрокова фільтрація (Min_sup = 3)</strong>
+                <strong style="margin-left:8px;">🔄 Симуляція 4: Впорядкування 6 кроків розвитку компетентностей</strong>
               </div>
               <span id="sim4-counter">Етап у процесі</span>
             </div>
             <div class="sim-workspace">
-              <p style="font-size:0.93rem;">Вихідна таблиця сирих транзакцій (умова: <strong>Min_sup = 3</strong>):</p>
-              <table class="tx-table">
-                <thead>
-                  <tr><th>TID</th><th>Придбані покупки</th><th>TID</th><th>Придбані покупки</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>100</td><td><code>a, b, c</code></td><td>400</td><td><code>e, d</code></td></tr>
-                  <tr><td>200</td><td><code>b, d</code></td><td>500</td><td><code>a, b, c, d</code></td></tr>
-                  <tr><td>300</td><td><code>b, a, d, c</code></td><td>600</td><td><code>f</code></td></tr>
-                </tbody>
-              </table>
+              <p style="margin-bottom: 12px; font-size: 0.93rem;">Визначте порядковий номер кроку (від 1 до 6) для кожної дії вчителя в навчальному модулі:</p>
 
-              <div class="task-card">
-                <strong>Крок 4.1. Позначте 1-елементні набори, які будуть ВІДКИНУТІ на 1-му проході (Support &lt; 3):</strong>
-                <div class="checkbox-grid">
-                  <label class="check-pill"><input type="checkbox" id="ap-a"> Набір {a} (Support = 3)</label>
-                  <label class="check-pill"><input type="checkbox" id="ap-b"> Набір {b} (Support = 4)</label>
-                  <label class="check-pill"><input type="checkbox" id="ap-e"> Набір {e} (Support = 1)</label>
-                  <label class="check-pill"><input type="checkbox" id="ap-f"> Набір {f} (Support = 1)</label>
-                </div>
-              </div>
-
-              <div class="task-card">
-                <strong>Крок 4.2. Після 2-го проходу набір <code>{a, d}</code> має Support = 2 (&lt; 3) і відсікається (Pruning). Який 3-елементний набір залишиться у фіналі?</strong>
-                <select id="ap-final" style="margin-top:8px;">
-                  <option value="">-- Оберіть фінальний частий набір --</option>
-                  <option value="abc">{a, b, c} (Support = 3: Флешка, DVD-диск, USB-подовжувач)</option>
-                  <option value="abd">{a, b, d} (містить нечастий піднабір {a, d})</option>
-                  <option value="def">{d, e, f} (Support = 0)</option>
+              <div class="matrix-row">
+                <div>«Учитель разом з учнями обирає розвиток критичного мислення, формулює SMART-ціль та показники вимірювання».</div>
+                <select id="alg-1">
+                  <option value="">-- Номер кроку --</option>
+                  <option value="1">Крок 1. Що розвиваємо? (SMART-цілі)</option>
+                  <option value="2">Крок 2. Підготовка</option>
+                  <option value="3">Крок 3. Працюємо</option>
+                  <option value="4">Крок 4. Зворотний зв'язок</option>
+                  <option value="5">Крок 5. Рефлексія</option>
+                  <option value="6">Крок 6. Регулярна практика, оцінка та корекція</option>
                 </select>
-                <div style="margin-top:14px;">
-                  <button type="button" class="btn btn-primary" id="btnCheckSim4">✅ Виконати фільтрацію Apriori</button>
-                </div>
-                <div class="feedback-msg" id="sim4-fb"></div>
               </div>
+
+              <div class="matrix-row">
+                <div>«Педагог генерує картки завдань, критерії оцінювання (рубрики) та визначає таймінг активності».</div>
+                <select id="alg-2">
+                  <option value="">-- Номер кроку --</option>
+                  <option value="1">Крок 1. Що розвиваємо? (SMART-цілі)</option>
+                  <option value="2">Крок 2. Підготовка</option>
+                  <option value="3">Крок 3. Працюємо</option>
+                  <option value="4">Крок 4. Зворотний зв'язок</option>
+                  <option value="5">Крок 5. Рефлексія</option>
+                  <option value="6">Крок 6. Регулярна практика, оцінка та корекція</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>«Після групової гри учні отримують рекомендації вчителя та коментарі однокласників щодо своїх аргументів».</div>
+                <select id="alg-3">
+                  <option value="">-- Номер кроку --</option>
+                  <option value="1">Крок 1. Що розвиваємо? (SMART-цілі)</option>
+                  <option value="2">Крок 2. Підготовка</option>
+                  <option value="3">Крок 3. Працюємо</option>
+                  <option value="4">Крок 4. Зворотний зв'язок</option>
+                  <option value="5">Крок 5. Рефлексія</option>
+                  <option value="6">Крок 6. Регулярна практика, оцінка та корекція</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>«Учні заповнюють щоденник спостережень: аналізують набутий досвід і формулюють власні висновки на майбутнє».</div>
+                <select id="alg-4">
+                  <option value="">-- Номер кроку --</option>
+                  <option value="1">Крок 1. Що розвиваємо? (SMART-цілі)</option>
+                  <option value="2">Крок 2. Підготовка</option>
+                  <option value="3">Крок 3. Працюємо</option>
+                  <option value="4">Крок 4. Зворотний зв'язок</option>
+                  <option value="5">Крок 5. Рефлексія</option>
+                  <option value="6">Крок 6. Регулярна практика, оцінка та корекція</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>«На наступних уроках учитель пропонує подібні кейси, вимірює динаміку прогресу та корегує рівень складності».</div>
+                <select id="alg-5">
+                  <option value="">-- Номер кроку --</option>
+                  <option value="1">Крок 1. Що розвиваємо? (SMART-цілі)</option>
+                  <option value="2">Крок 2. Підготовка</option>
+                  <option value="3">Крок 3. Працюємо</option>
+                  <option value="4">Крок 4. Зворотний зв'язок</option>
+                  <option value="5">Крок 5. Рефлексія</option>
+                  <option value="6">Крок 6. Регулярна практика, оцінка та корекція</option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-primary" id="btnCheckSim4">✅ Перевірити алгоритм та відкрити Етап 5</button>
+              <div class="feedback-msg" id="sim4-fb"></div>
             </div>
           </div>
         </div>
@@ -850,8 +832,8 @@
         <div class="stage-title-wrap">
           <div class="stage-num">5</div>
           <div>
-            <h3>Етап 5. Архітектура Data Pipeline та підсумковий синтез моделі ⚙️</h3>
-            <small style="color: var(--text-light);">Очищення, репрезентативність, нормалізація [0..1] та порівняння SOM vs Асоціативні правила</small>
+            <h3>Етап 5. Цифровий арсенал педагога: ШІ-платформи для навчальних матеріалів 🛠️</h3>
+            <small style="color: var(--text-light);">MagicSchool AI, Google Vids, Luma AI, Vheer та Padlet Arcade</small>
           </div>
         </div>
         <span class="stage-tag" id="tag-5">🔒 Заблоковано</span>
@@ -860,38 +842,36 @@
       <div class="stage-body">
         <div class="theory-zone">
           <div class="theory-header">
-            <h4>🔑 Теоретичний ключ №5: 4 етапи Data Pipeline та порівняння методів</h4>
-            <span class="pill amber">Слайди 13–15</span>
+            <h4>🔑 Теоретичний ключ №5: Огляд 5 спеціалізованих ШІ-інструментів педагога</h4>
+            <span class="pill amber">Слайди 11–15</span>
           </div>
           <div class="theory-content">
             <div class="theory-grid">
               <div class="theory-mini-card">
-                <strong>🔄 Конвеєр Data Pipeline:</strong>
-                1) <strong>Сирі дані</strong> (великий обсяг транзакцій/характеристик);<br>
-                2) <strong>Очищення</strong> (виявлення викидів та усунення протиріч);<br>
-                3) <strong>Репрезентативність</strong> (адекватне відображення генеральної сукупності);<br>
-                4) <strong>Нормалізація</strong> (перетворення числових даних у діапазон <code>[0..1]</code>).
+                <strong>🪄 MagicSchool AI (<code>app.magicschool.ai</code>):</strong>
+                Спеціалізована платформа для шкіл: <em>Lesson Plan, Rubric Generator, Worksheet Generator, YouTube Video Questions, IEP Generator</em>, асистент <em>Raina</em>.
               </div>
               <div class="theory-mini-card">
-                <strong>🗺️ Карти Кохонена (SOM):</strong>
-                • <em>Природа даних:</em> безперервні багатовимірні показники.<br>
-                • <em>Математичний фокус:</em> зменшення просторової розмірності (<strong>Евклідова відстань</strong>).<br>
-                • <em>Результат:</em> 2D-карта кластерів.
+                <strong>🎬 Google Vids (<code>docs.google.com/videos</code>):</strong>
+                Перетворення презентацій у відеолекцію, озвучка тексту, створення ШІ-аватару (окрім відомих постатей), запис екрана.
               </div>
               <div class="theory-mini-card">
-                <strong>🔗 Асоціативні правила:</strong>
-                • <em>Природа даних:</em> дискретні транзакційні події.<br>
-                • <em>Математичний фокус:</em> статистична частота (<strong>Підтримка та Вірогідність</strong>).<br>
-                • <em>Результат:</em> логічні правила «Якщо А, то Б».
+                <strong>🎥 Luma AI та Vheer:</strong>
+                • <strong>Luma AI (<code>lumalabs.ai</code>):</strong> генерація відео за зображенням та озвучка.<br>
+                • <strong>Vheer (<code>vheer.com</code>):</strong> безкоштовна генерація зображень і відео з тексту/фото без водяних знаків.
+              </div>
+              <div class="theory-mini-card">
+                <strong>🎮 Padlet Arcade (<code>arcade.padlet.com</code>):</strong>
+                Створення інтерактивних навчальних ігор менш ніж за хвилину за темою, завантаженим PDF/документом або посиланням на YouTube/вебсайт.
               </div>
             </div>
 
             <div class="key-gate" id="gate-5">
-              <div class="key-gate-q">❓ Перевірка для активації Ключа №5: У який числовий діапазон перетворюються дані на фінальному кроці конвеєра підготовки (Нормалізація)?</div>
+              <div class="key-gate-q">❓ Перевірка для активації Ключа №5: Який інструмент дозволяє перетворити завантажений PDF-файл або відео YouTube на інтерактивну навчальну гру менш ніж за хвилину?</div>
               <div class="gate-options">
-                <button type="button" class="gate-option" data-gate="5" data-ok="0">А) У діапазон від -100 до +100.</button>
-                <button type="button" class="gate-option" data-gate="5" data-ok="1">Б) У діапазон [0..1] шляхом трансформації вхідного вектора в одиничний.</button>
-                <button type="button" class="gate-option" data-gate="5" data-ok="0">В) Нормалізація потрібна лише для текстових чеків, а не для числових метрик.</button>
+                <button type="button" class="gate-option" data-gate="5" data-ok="0">А) Google Vids.</button>
+                <button type="button" class="gate-option" data-gate="5" data-ok="1">Б) Padlet Arcade.</button>
+                <button type="button" class="gate-option" data-gate="5" data-ok="0">В) Luma AI.</button>
               </div>
               <div class="feedback-msg" id="gate-fb-5"></div>
             </div>
@@ -902,60 +882,77 @@
           <div class="sim-locked-banner" id="sim-lock-5">
             <span class="big-lock">🔒</span>
             <strong>Симуляція заблокована!</strong>
-            <p>Активуйте фінальний Теоретичний ключ №5, щоб зібрати еталонний Data Pipeline.</p>
+            <p>Активуйте фінальний Теоретичний ключ №5, щоб відкрити Цифровий арсенал педагога.</p>
           </div>
           <div id="sim-content-5" style="display: none;">
             <div class="sim-topbar">
               <div class="sim-dots">
                 <span style="background:#ef4444;"></span><span style="background:#f59e0b;"></span><span style="background:#10b981;"></span>
-                <strong style="margin-left:8px;">⚙️ Симуляція 5: Конструктор еталонного Data Pipeline</strong>
+                <strong style="margin-left:8px;">🛠️ Симуляція 5: Добір ШІ-інструменту під методичну задачу</strong>
               </div>
-              <span id="sim5-counter">Фінальний крок (ціль: 100%)</span>
+              <span id="sim5-counter">Фінальний крок</span>
             </div>
             <div class="sim-workspace">
-              <p style="margin-bottom: 12px; font-size: 0.93rem;">Налаштуйте всі 4 етапи конвеєра підготовки даних та оберіть математичний фокус для побудови еталонної моделі:</p>
-              <div class="pipeline-grid">
-                <div class="form-group">
-                  <label>Етап 1 (Очищення):</label>
-                  <select id="pl-clean">
-                    <option value="0">Залишити викиди та суперечливі записи як є</option>
-                    <option value="25">Виявити викиди та усунути протиріччя у сирих даних</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Етап 2 (Вибірка):</label>
-                  <select id="pl-repr">
-                    <option value="0">Взяти випадкові 10 записів без перевірки</option>
-                    <option value="25">Перевірити репрезентативність (відображення генеральної сукупності)</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Етап 3 (Нормалізація):</label>
-                  <select id="pl-norm">
-                    <option value="0">Залишити різні шкали (мільйони гривень і відсотки)</option>
-                    <option value="25">Перетворити числові дані у діапазон [0..1] (одиничний вектор)</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Етап 4 (Математичний фокус):</label>
-                  <select id="pl-math">
-                    <option value="0">Випадковий перебір без порогів</option>
-                    <option value="25">SOM: Евклідова відстань | Асоціації: Support та Confidence</option>
-                  </select>
-                </div>
+              <p style="margin-bottom: 12px; font-size: 0.93rem;">Оберіть оптимальну ШІ-платформу для кожного із 4 завдань учителя:</p>
+
+              <div class="matrix-row">
+                <div>1. Згенерувати табличну рубрику оцінювання проєкту, робочий аркуш та запитання до відео YouTube на єдиній освітній платформі.</div>
+                <select id="tool-1">
+                  <option value="">-- Платформа --</option>
+                  <option value="magicschool">🪄 MagicSchool AI</option>
+                  <option value="vids">🎬 Google Vids</option>
+                  <option value="vheer">🖼️ Vheer</option>
+                  <option value="padlet">🎮 Padlet Arcade</option>
+                </select>
               </div>
 
-              <button type="button" class="btn btn-success" id="btnBuildPipeline">🏆 Запустити Data Pipeline та отримати Сертифікат</button>
-
-              <div class="output-screen" id="pipeline-result-box" style="display: none;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <strong>📊 Готовність еталонної моделі Data Mining:</strong>
-                  <strong id="pipeline-score-text" style="color: var(--primary);">0%</strong>
-                </div>
-                <div class="meter-bar"><div class="meter-fill" id="pipeline-meter"></div></div>
-                <div class="data-preview" id="assembled-pipeline"></div>
-                <div class="feedback-msg" id="sim5-fb"></div>
+              <div class="matrix-row">
+                <div>2. Перетворити готову навчальну презентацію на відеолекцію з озвучкою тексту та цифровим аватаром.</div>
+                <select id="tool-2">
+                  <option value="">-- Платформа --</option>
+                  <option value="magicschool">🪄 MagicSchool AI</option>
+                  <option value="vids">🎬 Google Vids</option>
+                  <option value="vheer">🖼️ Vheer</option>
+                  <option value="padlet">🎮 Padlet Arcade</option>
+                </select>
               </div>
+
+              <div class="matrix-row">
+                <div>3. Швидко згенерувати безкоштовні ілюстрації до кейсу без реєстрації та водяних знаків.</div>
+                <select id="tool-3">
+                  <option value="">-- Платформа --</option>
+                  <option value="magicschool">🪄 MagicSchool AI</option>
+                  <option value="vids">🎬 Google Vids</option>
+                  <option value="vheer">🖼️ Vheer</option>
+                  <option value="padlet">🎮 Padlet Arcade</option>
+                </select>
+              </div>
+
+              <div class="matrix-row">
+                <div>4. Завантажити конспект у форматі PDF і за 1 хвилину створити інтерактивну гру на сортування або зіставлення з таблицею лідерів.</div>
+                <select id="tool-4">
+                  <option value="">-- Платформа --</option>
+                  <option value="magicschool">🪄 MagicSchool AI</option>
+                  <option value="vids">🎬 Google Vids</option>
+                  <option value="vheer">🖼️ Vheer</option>
+                  <option value="padlet">🎮 Padlet Arcade</option>
+                </select>
+              </div>
+
+              <div class="self-eval-box">
+                <strong>Оберіть ШІ-інструмент, який ви плануєте впровадити на своїх уроках насамперед:</strong>
+                <select id="fav-tool" style="margin-top:8px;">
+                  <option value="MagicSchool AI (розробка завдань і рубрик)">🪄 MagicSchool AI (розробка компетентнісних завдань і рубрик)</option>
+                  <option value="Padlet Arcade (інтерактивні навчальні ігри)">🎮 Padlet Arcade (інтерактивні навчальні ігри за 1 хвилину)</option>
+                  <option value="Google Vids (відеолекції з презентацій)">🎬 Google Vids (перетворення презентацій у відеолекції)</option>
+                  <option value="Luma AI / Vheer (візуалізація зображень та відео)">🎥 Luma AI / Vheer (візуалізація навчальних кейсів)</option>
+                </select>
+              </div>
+
+              <div style="margin-top: 16px;">
+                <button type="button" class="btn btn-success" id="btnFinishSim5">🏆 Завершити місію та отримати Сертифікат</button>
+              </div>
+              <div class="feedback-msg" id="sim5-fb"></div>
             </div>
           </div>
         </div>
@@ -964,18 +961,18 @@
 
     <!-- ФІНАЛЬНИЙ СЕРТИФІКАТ -->
     <section class="cert-card" id="final-cert">
-      <div class="cert-seal">🏆🧠📊</div>
-      <div class="hero-badge">МІСІЮ УСПІШНО ВИКОНАНО! ПРИХОВАНІ ЗАКОНОМІРНОСТІ РОЗКРИТО</div>
-      <h2 class="cert-title">СЕРТИФІКАТ АНАЛІТИКА DATA MINING ТА UNSUPERVISED LEARNING</h2>
-      <p style="color: var(--text-muted);">Підтверджує опанування архітектури Карт Кохонена (SOM), Асоціативних правил, алгоритму Apriori та Data Pipeline</p>
+      <div class="cert-seal">🏆🧩🎓</div>
+      <div class="hero-badge">МІСІЮ УСПІШНО ВИКОНАНО! КОМПЕТЕНТНІСНИЙ ПІДХІД ОПАНОВАНО</div>
+      <h2 class="cert-title">СЕРТИФІКАТ МАЙСТРА КОМПЕТЕНТНІСНИХ ЗАВДАНЬ ІЗ ШІ</h2>
+      <p style="color: var(--text-muted);">Підтверджує успішне проходження інтерактивного тренажера «ШІ як інструмент створення компетентнісних завдань»</p>
 
-      <div class="cert-recipient" id="cert-name">Аналітик даних</div>
-      <div style="color: var(--text-muted); font-weight: 600;" id="cert-track">Спеціалізація</div>
+      <div class="cert-recipient" id="cert-name">Педагог-новатор</div>
+      <div style="color: var(--text-muted); font-weight: 600;" id="cert-spec">Освітня галузь</div>
 
       <div class="cert-details">
         <div class="cert-stat"><span>🔑 Зібрані теоретичні ключі:</span><strong>5 із 5 (100% опанування)</strong></div>
-        <div class="cert-stat"><span>⭐ Індекс майстерності Data Mining:</span><strong id="cert-score">0 балів</strong></div>
-        <div class="cert-stat"><span>⚙️ Статус моделі:</span><strong>Еталонний Data Pipeline [0..1]</strong></div>
+        <div class="cert-stat"><span>⭐ Індекс методичної майстерності:</span><strong id="cert-score">0 балів</strong></div>
+        <div class="cert-stat"><span>🛠️ Пріоритетний ШІ-інструмент:</span><strong id="cert-tool">MagicSchool AI</strong></div>
       </div>
 
       <!-- БЛОК ВІДПРАВЛЕННЯ РЕЗУЛЬТАТУ ВИКЛАДАЧУ -->
@@ -983,12 +980,12 @@
         <h4>📩 Надіслати результат проходження квесту на пошту викладача:</h4>
         <div class="send-grid">
           <div class="form-group">
-            <label for="certInputName">👤 Прізвище та ім'я учасника:</label>
+            <label for="certInputName">👩‍🏫 Прізвище та ім'я учасника:</label>
             <input type="text" id="certInputName" placeholder="Введіть ваше ПІБ" />
           </div>
           <div class="form-group">
-            <label for="certInputOrg">🏫 Навчальний заклад / група або email:</label>
-            <input type="text" id="certInputOrg" placeholder="Наприклад: Група ІН-21 / email@ukr.net" />
+            <label for="certInputOrg">🏫 Заклад освіти або контактний email:</label>
+            <input type="text" id="certInputOrg" placeholder="Наприклад: Ліцей №5 / email@ukr.net" />
           </div>
           <button type="button" class="btn btn-success" id="btnSendEmail">📤 Надіслати результат</button>
         </div>
@@ -996,11 +993,12 @@
       </div>
 
       <div class="courses-list">
-        <strong>🛠️ Інструменти для практичної реалізації моделей Data Mining:</strong>
+        <strong>🔗 Корисні посилання з презентації для практичної роботи:</strong>
         <ul>
-          <li><strong>Orange Data Mining:</strong> візуальні віджети <em>Self-Organizing Map (SOM)</em>, <em>Frequent Itemsets</em> та <em>Association Rules</em> без програмування.</li>
-          <li><strong>Python (MiniSom / SimpSOM):</strong> побудова та візуалізація шестикутних теплових карт Кохонена.</li>
-          <li><strong>Python (mlxtend):</strong> реалізація алгоритмів <code>apriori</code>, <code>fpgrowth</code> та <code>association_rules</code> з фільтрацією за <em>support</em> і <em>confidence</em>.</li>
+          <li><strong>Каталог компетентнісних робіт для НУШ:</strong> <code>https://nus-tasks.net/</code></li>
+          <li><strong>MagicSchool AI (генератор матеріалів та рубрик):</strong> <code>https://app.magicschool.ai/</code></li>
+          <li><strong>Padlet Arcade (створення навчальних ігор):</strong> <code>https://arcade.padlet.com/</code></li>
+          <li><strong>Google Vids / Luma AI / Vheer:</strong> <code>docs.google.com/videos</code>, <code>lumalabs.ai</code>, <code>vheer.com</code></li>
         </ul>
       </div>
 
@@ -1022,7 +1020,7 @@
         var statusEl = document.getElementById('engineStatus');
         if (statusEl) {
           statusEl.style.color = '#16a34a';
-          statusEl.textContent = '🟢 Інтерактивний рушій квесту Data Mining активний — натискайте на варіанти відповідей!';
+          statusEl.textContent = '🟢 Інтерактивний рушій квесту активний — натискайте на варіанти відповідей!';
         }
 
         var state = {
@@ -1030,7 +1028,7 @@
           keysUnlocked: 0,
           gates: { 1: false, 2: false, 3: false, 4: false, 5: false },
           sim1Done: { 1: false, 2: false, 3: false, 4: false },
-          sim2Done: { 1: false, 2: false, 3: false },
+          sim2Completed: false,
           sim3Completed: false,
           sim4Completed: false,
           sim5Completed: false,
@@ -1040,7 +1038,7 @@
         function addScore(points) {
           state.score += points;
           document.getElementById('keysPill').textContent = '🔑 Ключі: ' + state.keysUnlocked + ' / 5';
-          document.getElementById('scorePill').textContent = '⭐ Індекс аналітика: ' + state.score + ' балів';
+          document.getElementById('scorePill').textContent = '⭐ Індекс методиста: ' + state.score + ' балів';
         }
 
         function unlockNextStage(currentStage) {
@@ -1072,7 +1070,7 @@
         var certInputName = document.getElementById('certInputName');
         if (certInputName) {
           certInputName.addEventListener('input', function () {
-            document.getElementById('cert-name').textContent = certInputName.value.trim() || 'Аналітик даних центру «DataPulse»';
+            document.getElementById('cert-name').textContent = certInputName.value.trim() || 'Педагог-новатор НУШ';
           });
         }
 
@@ -1084,7 +1082,7 @@
             var nav0 = document.getElementById('nav-0');
             nav0.classList.remove('active');
             nav0.classList.add('done');
-            nav0.textContent = '✅ 0. Кейс';
+            nav0.textContent = '✅ 0. Виклик';
             document.getElementById('nav-1').classList.add('active');
             document.getElementById('stage-1').scrollIntoView({ behavior: 'smooth', block: 'start' });
             return;
@@ -1102,14 +1100,14 @@
               Array.from(btn.parentElement.children).forEach(function (c) { c.disabled = true; });
               btn.classList.add('correct');
               fb.className = 'feedback-msg show ok';
-              fb.innerHTML = '🔑 <strong>Ключ №' + stageNum + ' активовано (+20 балів)!</strong> Лабораторію нижче розблоковано.';
+              fb.innerHTML = '🔑 <strong>Ключ №' + stageNum + ' активовано (+20 балів)!</strong> Симуляцію нижче розблоковано.';
               document.getElementById('sim-lock-' + stageNum).style.display = 'none';
               document.getElementById('sim-content-' + stageNum).style.display = 'block';
-              document.getElementById('tag-' + stageNum).textContent = '🎮 Лабораторія відкрита';
+              document.getElementById('tag-' + stageNum).textContent = '🎮 Симуляція відкрита';
             } else {
               btn.classList.add('wrong');
               fb.className = 'feedback-msg show err';
-              fb.innerHTML = '⚠️ Не зовсім так. Перегляньте теоретичну картку вище та спробуйте ще раз!';
+              fb.innerHTML = '⚠️ Не зовсім так. Перегляньте підказку в Теоретичному ключі вище та спробуйте ще раз!';
             }
             return;
           }
@@ -1124,129 +1122,119 @@
               state.sim1Done[caseNum] = true;
               addScore(15);
               document.getElementById('s1-case-' + caseNum).classList.add('solved');
-              st1.innerHTML = '<strong style="color:var(--success);">✅ Визначено</strong>';
+              st1.innerHTML = '<strong style="color:var(--success);">✅ Виконано</strong>';
               fb1.className = 'feedback-msg show ok';
-              fb1.innerHTML = '🧠 <strong>Точний вибір (+15 балів)!</strong> Архітектура відповідає природі даних та поставленій задачі.';
+              fb1.innerHTML = '🎯 <strong>Точно (+15 балів)!</strong> Поняття та роль ШІ визначено вірно.';
               var count1 = Object.values(state.sim1Done).filter(Boolean).length;
-              document.getElementById('sim1-counter').textContent = 'Вирішено: ' + count1 + ' / 4';
+              document.getElementById('sim1-counter').textContent = 'Виконано: ' + count1 + ' / 4';
               if (count1 === 4) unlockNextStage(1);
             } else {
               fb1.className = 'feedback-msg show err';
-              fb1.innerHTML = '⚠️ Невідповідна архітектура. Звірте наявність учителя (еталонів) та тип зв’язків у таксономії.';
+              fb1.innerHTML = '⚠️ Звірте визначення з Теоретичним ключем №1 та оберіть правильний варіант.';
             }
             return;
           }
 
-          if (btn.hasAttribute('data-sim2')) {
-            var qNum = Number(btn.getAttribute('data-sim2'));
-            var ok2 = btn.getAttribute('data-ok') === '1';
-            if (state.sim2Done[qNum]) return;
-            var fb2 = document.getElementById('s2-fb-' + qNum);
-            if (ok2) {
-              state.sim2Done[qNum] = true;
-              addScore(20);
-              document.getElementById('s2-q-' + qNum).classList.add('solved');
+          if (btn.id === 'btnCheckSim2') {
+            var e1 = document.getElementById('eddl-1').value;
+            var e2 = document.getElementById('eddl-2').value;
+            var e3 = document.getElementById('eddl-3').value;
+            var cAns = document.getElementById('candle-ans').value;
+            var fb2 = document.getElementById('sim2-fb');
+
+            if (e1 === 'energy' && e2 === 'data' && e3 === 'action' && cAns === 'yes') {
+              if (!state.sim2Completed) {
+                state.sim2Completed = true;
+                addScore(60);
+                document.getElementById('sim2-counter').textContent = '✅ Виконано';
+                unlockNextStage(2);
+              }
               fb2.className = 'feedback-msg show ok';
-              fb2.innerHTML = '🌡️ <strong>Правильно (+20 балів)!</strong> Дешифрування теплової карти виконано.';
-              var count2 = Object.values(state.sim2Done).filter(Boolean).length;
-              document.getElementById('sim2-counter').textContent = 'Виконано кроків синтезу: ' + count2 + ' / 3';
-              if (count2 === 3) unlockNextStage(2);
+              fb2.innerHTML = '📐 <strong>Бездоганно (+60 балів)!</strong> Усі елементи формули «Енергія — Дані — Дія — Лінійка» та статистичний висновок у кейсі зі свічками визначено правильно. Етап 3 розблоковано!';
             } else {
               fb2.className = 'feedback-msg show err';
-              fb2.innerHTML = '⚠️ Погляньте на колірну шкалу: синій колір означає мінімум, темно-червоний — максимум ознаки.';
+              fb2.innerHTML = '⚠️ Перевірте відповіді: 1 — Енергія, 2 — Дані (включно із зайвим), 3 — Дія + Лінійка; у кейсі зі свічками твердження підтверджується за медіаною (60 > 58) та 50%-м діапазоном.';
             }
             return;
           }
 
           if (btn.id === 'btnCheckSim3') {
-            var supVal = Number(document.getElementById('calc-sup').value);
-            var confVal = Number(document.getElementById('calc-conf').value);
-            var g1 = document.getElementById('gold-1').value;
-            var g2 = document.getElementById('gold-2').value;
-            var g3 = document.getElementById('gold-3').value;
+            var s1 = document.getElementById('ss-1').value;
+            var s2 = document.getElementById('ss-2').value;
+            var s3 = document.getElementById('ss-3').value;
+            var s4 = document.getElementById('ss-4').value;
             var fb3 = document.getElementById('sim3-fb');
 
-            if (supVal === 40 && confVal === 80 && g1 === 'noise' && g2 === 'gold' && g3 === 'obvious') {
+            if (s1 === 'crit' && s2 === 'prob' && s3 === 'comm' && s4 === 'eq') {
               if (!state.sim3Completed) {
                 state.sim3Completed = true;
-                addScore(40);
+                addScore(60);
                 document.getElementById('sim3-counter').textContent = '✅ Виконано';
                 unlockNextStage(3);
               }
               fb3.className = 'feedback-msg show ok';
-              fb3.innerHTML = '🛒 <strong>Бездоганно (+40 балів)!</strong> Support = 4/10 (40%), Confidence = 4/5 (80%), а матрицю «Золотої середини» заповнено вірно. Етап 4 розблоковано!';
+              fb3.innerHTML = '💡 <strong>Чудово (+60 балів)!</strong> Усі 4 ШІ-практики точно співвіднесено з життєвими компетентностями. Етап 4 розблоковано!';
             } else {
               fb3.className = 'feedback-msg show err';
-              fb3.innerHTML = '⚠️ Перевірте: Support = (4 / 10) × 100 = 40%, Confidence = (4 / 5) × 100 = 80%; у 3.2: 1 — шум, 2 — золота середина, 3 — очевидне правило.';
+              fb3.innerHTML = '⚠️ Перевірте відповідність: 1 — Критичне мислення, 2 — Розв’язання проблем, 3 — Комунікативні навички, 4 — Емоційний інтелект.';
             }
             return;
           }
 
           if (btn.id === 'btnCheckSim4') {
-            var cA = document.getElementById('ap-a').checked;
-            var cB = document.getElementById('ap-b').checked;
-            var cE = document.getElementById('ap-e').checked;
-            var cF = document.getElementById('ap-f').checked;
-            var apFinal = document.getElementById('ap-final').value;
+            var a1 = document.getElementById('alg-1').value;
+            var a2 = document.getElementById('alg-2').value;
+            var a3 = document.getElementById('alg-3').value;
+            var a4 = document.getElementById('alg-4').value;
+            var a5 = document.getElementById('alg-5').value;
             var fb4 = document.getElementById('sim4-fb');
 
-            if (!cA && !cB && cE && cF && apFinal === 'abc') {
+            if (a1 === '1' && a2 === '2' && a3 === '4' && a4 === '5' && a5 === '6') {
               if (!state.sim4Completed) {
                 state.sim4Completed = true;
-                addScore(40);
-                document.getElementById('sim4-counter').textContent = '✅ Фільтрацію завершено';
+                addScore(60);
+                document.getElementById('sim4-counter').textContent = '✅ Цикл зібрано';
                 unlockNextStage(4);
               }
               fb4.className = 'feedback-msg show ok';
-              fb4.innerHTML = '✂️ <strong>Принцип Pruning спрацював безпомилково (+40 балів)!</strong> Відкинуто {e}, {f} (Support = 1), відсічено надмножини {a, d}, а у фіналі отримано {a, b, c} (Support = 3). Фінальний Етап 5 розблоковано!';
+              fb4.innerHTML = '🔄 <strong>Алгоритм вибудовано правильно (+60 балів)!</strong> Після Кроку 3 («Працюємо») йдуть Крок 4 («Зворотний зв’язок»), Крок 5 («Рефлексія») та Крок 6 («Регулярна практика й корекція»). Фінальний Етап 5 розблоковано!';
             } else {
               fb4.className = 'feedback-msg show err';
-              fb4.innerHTML = '⚠️ Уточніть фільтрацію: при Min_sup = 3 відкидаються набори зі Support = 1 ({e} та {f}), а фінальним частим набором є {a, b, c}.';
+              fb4.innerHTML = '⚠️ Уточніть номери кроків: 1 (SMART-цілі), 2 (Підготовка), 4 (Зворотний зв’язок), 5 (Рефлексія), 6 (Регулярна практика, оцінка та корекція).';
             }
             return;
           }
 
-          if (btn.id === 'btnBuildPipeline') {
-            var p1 = Number(document.getElementById('pl-clean').value);
-            var p2 = Number(document.getElementById('pl-repr').value);
-            var p3 = Number(document.getElementById('pl-norm').value);
-            var p4 = Number(document.getElementById('pl-math').value);
-            var total = p1 + p2 + p3 + p4;
-
-            document.getElementById('pipeline-result-box').style.display = 'block';
-            document.getElementById('pipeline-score-text').textContent = total + '%';
-            document.getElementById('pipeline-meter').style.width = total + '%';
-
-            document.getElementById('assembled-pipeline').innerHTML =
-              '<strong>Конфігурація Data Pipeline:</strong><br>' +
-              '1. Очищення: ' + (p1 ? '✅ Викиди та протиріччя усунено' : '❌ Сирі дані містять шум') + '<br>' +
-              '2. Вибірка: ' + (p2 ? '✅ Репрезентативність підтверджено' : '❌ Нерепрезентативна вибірка') + '<br>' +
-              '3. Нормалізація: ' + (p3 ? '✅ Дані трансформовано у діапазон [0..1]' : '❌ Неузгоджені масштаби ознак') + '<br>' +
-              '4. Математичний апарат: ' + (p4 ? '✅ Евклідова відстань (SOM) та Support/Confidence (Apriori)' : '❌ Не визначено');
-
+          if (btn.id === 'btnFinishSim5') {
+            var t1 = document.getElementById('tool-1').value;
+            var t2 = document.getElementById('tool-2').value;
+            var t3 = document.getElementById('tool-3').value;
+            var t4 = document.getElementById('tool-4').value;
             var fb5 = document.getElementById('sim5-fb');
-            if (total === 100) {
+
+            if (t1 === 'magicschool' && t2 === 'vids' && t3 === 'vheer' && t4 === 'padlet') {
               if (!state.sim5Completed) {
                 state.sim5Completed = true;
-                addScore(40);
-                document.getElementById('sim5-counter').textContent = '✅ Модель готова (100%)';
+                addScore(60);
+                document.getElementById('sim5-counter').textContent = '✅ Арсенал опановано';
                 unlockNextStage(5);
               }
               fb5.className = 'feedback-msg show ok';
-              fb5.innerHTML = '🏆 <strong>Еталонну модель Data Mining побудовано (100%, +40 балів)!</strong> Усі 5 етапів квесту завершено, ваш сертифікат сформовано нижче.';
+              fb5.innerHTML = '🏆 <strong>Місію виконано на 100% (+60 балів)!</strong> Усі 5 етапів пройдено, ваш персональний сертифікат сформовано нижче.';
 
-              var rawName = document.getElementById('userName').value.trim();
-              document.getElementById('cert-name').textContent = rawName || 'Аналітик даних центру «DataPulse»';
+              var rawName = document.getElementById('teacherName').value.trim();
+              document.getElementById('cert-name').textContent = rawName || 'Педагог-новатор НУШ';
               document.getElementById('certInputName').value = rawName;
-              document.getElementById('cert-track').textContent = 'Напрям: ' + document.getElementById('userTrack').value;
-              document.getElementById('cert-score').textContent = state.score + ' із 340 балів';
+              document.getElementById('cert-spec').textContent = 'Напрям: ' + document.getElementById('teacherSpec').value;
+              document.getElementById('cert-score').textContent = state.score + ' із 400 балів';
+              document.getElementById('cert-tool').textContent = document.getElementById('fav-tool').value;
 
               var cert = document.getElementById('final-cert');
               cert.classList.add('visible');
               cert.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
               fb5.className = 'feedback-msg show err';
-              fb5.innerHTML = '⚠️ Поточна готовність конвеєра: <strong>' + total + '%</strong>. Оберіть усі 4 коректні етапи підготовки та аналізу, щоб отримати сертифікат!';
+              fb5.innerHTML = '⚠️ Перевірте відповідність інструментів: 1 — MagicSchool AI, 2 — Google Vids, 3 — Vheer, 4 — Padlet Arcade.';
             }
             return;
           }
@@ -1269,12 +1257,13 @@
             sendFb.className = 'feedback-msg';
 
             var payload = {
-              _subject: 'Результат квесту «Data Mining»: ' + participantName,
+              _subject: 'Результат квесту «ШІ як ІЗН (День 3)»: ' + participantName,
               Учасник: participantName,
               Заклад_або_контакт: participantOrg || 'Не вказано',
-              Напрям: document.getElementById('userTrack').value,
-              Набрані_бали: state.score + ' із 340 балів',
+              Освітня_галузь: document.getElementById('teacherSpec').value,
+              Набрані_бали: state.score + ' із 400 балів',
               Зібрані_ключі: state.keysUnlocked + ' із 5',
+              Обраний_ШІ_інструмент: document.getElementById('fav-tool').value,
               Дата_проходження: new Date().toLocaleString('uk-UA')
             };
 
